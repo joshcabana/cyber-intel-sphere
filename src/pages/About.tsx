@@ -1,7 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
-import { Shield, ExternalLink } from "lucide-react";
+import { Shield } from "lucide-react";
 
 const philosophyRules = [
   "Every claim must trace to a primary source or reproducible test.",
@@ -58,18 +57,6 @@ export default function About() {
             </div>
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <a
-              href="https://github.com/joshcabana/cyber-intel-sphere"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="hero" size="lg">
-                <ExternalLink className="h-4 w-4" />
-                View on GitHub
-              </Button>
-            </a>
-          </div>
         </div>
       </main>
       <Footer />
