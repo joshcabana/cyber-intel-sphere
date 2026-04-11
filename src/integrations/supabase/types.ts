@@ -14,13 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          last_login: string | null
+          referral_code: string | null
+          referred_by: string | null
+          streak_count: number
+          stripe_customer_id: string | null
+          subscription_status: string
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          last_login?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          streak_count?: number
+          stripe_customer_id?: string | null
+          subscription_status?: string
+          subscription_tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          last_login?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          streak_count?: number
+          stripe_customer_id?: string | null
+          subscription_status?: string
+          subscription_tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      saved_briefs: {
+        Row: {
+          id: string
+          saved_at: string
+          slug: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          saved_at?: string
+          slug?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          saved_at?: string
+          slug?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
