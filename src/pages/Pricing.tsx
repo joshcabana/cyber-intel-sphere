@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, ArrowRight, Zap, Building2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const tiers = [
   {
@@ -13,6 +16,7 @@ const tiers = [
     description: "Essential intelligence for individual practitioners",
     cta: "Get Started Free",
     ctaVariant: "hero-outline" as const,
+    priceId: null,
     features: [
       { text: "Weekly threat briefings (summary)", included: true },
       { text: "Stack Matrix (basic view)", included: true },
@@ -31,6 +35,7 @@ const tiers = [
     cta: "Start Pro Trial",
     ctaVariant: "hero" as const,
     popular: true,
+    priceId: { monthly: "pro_monthly", annual: "pro_yearly" },
     features: [
       { text: "Everything in Free", included: true },
       { text: "Full article & research access", included: true },
@@ -48,6 +53,7 @@ const tiers = [
     description: "Custom intelligence for security organizations",
     cta: "Contact Sales",
     ctaVariant: "hero-outline" as const,
+    priceId: null,
     features: [
       { text: "Everything in Pro", included: true },
       { text: "Team seats & SSO", included: true },
@@ -63,6 +69,32 @@ const tiers = [
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(true);
+  const [loading, setLoading] = useState<string | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCheckout = async (tierName: string, priceId: { monthly: string; annual: string } | null) => {
+    if (!priceId) {
+      if (tierName === "Free") navigate("/login");
+      else toast.info("Contact us at sales@aithreatbrief.com for enterprise pricing");
+      return;
+    }
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setLoading(tierName);
+    try {
+      const { data, error } = await supabase.functions.invoke("stripe-checkout", {
+        body: { priceType: annual ? priceId.annual : priceId.monthly },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+    }
+    setLoading(null);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -78,7 +110,6 @@ export default function Pricing() {
               One prevented incident pays for years of Pro access. Choose your level.
             </p>
 
-            {/* Toggle */}
             <div className="flex items-center justify-center gap-3 mt-8">
               <span className={`text-sm ${!annual ? "text-foreground" : "text-muted-foreground"}`}>Monthly</span>
               <button
@@ -139,8 +170,13 @@ export default function Pricing() {
                   )}
                 </div>
 
-                <Button variant={tier.ctaVariant} className="w-full mb-6">
-                  {tier.cta}
+                <Button
+                  variant={tier.ctaVariant}
+                  className="w-full mb-6"
+                  onClick={() => handleCheckout(tier.name, tier.priceId)}
+                  disabled={loading === tier.name}
+                >
+                  {loading === tier.name ? "Loading..." : tier.cta}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
 
