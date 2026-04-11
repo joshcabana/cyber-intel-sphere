@@ -4,32 +4,58 @@ import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Download, Lock, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Search, Download, ExternalLink, ArrowUpDown, Shield } from "lucide-react";
 import UpgradeWall from "@/components/UpgradeWall";
 
-type Tool = {
+export type Tool = {
   name: string;
   category: string;
   pricing: string;
   rating: number;
   description: string;
   tags: string[];
-  affiliate?: boolean;
+  affiliate?: string; // affiliate code key
 };
 
 const tools: Tool[] = [
-  { name: "Prompt Armor", category: "Prompt Defense", pricing: "Freemium", rating: 4.5, description: "Real-time prompt injection detection and filtering for LLM applications", tags: ["injection", "defense", "runtime"], affiliate: true },
-  { name: "Garak", category: "Red Teaming", pricing: "Open Source", rating: 4.3, description: "LLM vulnerability scanner with 500+ probe types for automated red teaming", tags: ["scanning", "testing", "open-source"] },
-  { name: "Lakera Guard", category: "AI Firewall", pricing: "Enterprise", rating: 4.6, description: "Enterprise-grade AI content firewall with real-time threat detection", tags: ["firewall", "enterprise", "api"] },
-  { name: "Rebuff", category: "Prompt Defense", pricing: "Open Source", rating: 3.9, description: "Self-hardening prompt injection detector using multi-layer defense", tags: ["injection", "self-hardening", "open-source"] },
-  { name: "NeMo Guardrails", category: "Agent Frameworks", pricing: "Open Source", rating: 4.4, description: "NVIDIA's programmable guardrails for LLM-based conversational systems", tags: ["nvidia", "guardrails", "conversational"] },
-  { name: "Calypso AI", category: "Model Scanning", pricing: "Enterprise", rating: 4.2, description: "AI model risk assessment and continuous monitoring platform", tags: ["risk", "monitoring", "compliance"], affiliate: true },
-  { name: "HiddenLayer", category: "Model Scanning", pricing: "Enterprise", rating: 4.7, description: "ML model security platform for adversarial attack detection", tags: ["adversarial", "detection", "enterprise"] },
-  { name: "Protect AI", category: "LLM Security", pricing: "Enterprise", rating: 4.5, description: "End-to-end AI/ML security platform covering the full lifecycle", tags: ["lifecycle", "supply-chain", "enterprise"] },
-  { name: "LLM Guard", category: "LLM Security", pricing: "Open Source", rating: 4.1, description: "Input/output sanitization toolkit for LLM interactions", tags: ["sanitization", "input-output", "open-source"] },
+  // ── LLM Security ──────────────────────────────────────
+  { name: "Protect AI", category: "LLM Security", pricing: "Enterprise", rating: 4.5, description: "End-to-end AI/ML security platform covering the full lifecycle", tags: ["lifecycle", "supply-chain", "enterprise"], affiliate: "protect-ai" },
+  { name: "LLM Guard", category: "LLM Security", pricing: "Open Source", rating: 4.1, description: "Input/output sanitization toolkit for LLM interactions", tags: ["sanitization", "input-output", "open-source"], affiliate: "llm-guard" },
+
+  // ── Prompt Defense ────────────────────────────────────
+  { name: "Prompt Armor", category: "Prompt Defense", pricing: "Freemium", rating: 4.5, description: "Real-time prompt injection detection and filtering for LLM applications", tags: ["injection", "defense", "runtime"], affiliate: "prompt-armor" },
+  { name: "Rebuff", category: "Prompt Defense", pricing: "Open Source", rating: 3.9, description: "Self-hardening prompt injection detector using multi-layer defense", tags: ["injection", "self-hardening", "open-source"], affiliate: "rebuff" },
+
+  // ── AI Firewall ───────────────────────────────────────
+  { name: "Lakera Guard", category: "AI Firewall", pricing: "Enterprise", rating: 4.6, description: "Enterprise-grade AI content firewall with real-time threat detection", tags: ["firewall", "enterprise", "api"], affiliate: "lakera-guard" },
+
+  // ── Agent Frameworks ──────────────────────────────────
+  { name: "NeMo Guardrails", category: "Agent Frameworks", pricing: "Open Source", rating: 4.4, description: "NVIDIA's programmable guardrails for LLM-based conversational systems", tags: ["nvidia", "guardrails", "conversational"], affiliate: "nemo-guardrails" },
+  { name: "Guardrails AI", category: "Agent Frameworks", pricing: "Freemium", rating: 4.3, description: "Open-source guardrails framework for validating LLM outputs", tags: ["validation", "output", "open-source"], affiliate: "guardrails-ai" },
+
+  // ── Red Teaming ───────────────────────────────────────
+  { name: "Garak", category: "Red Teaming", pricing: "Open Source", rating: 4.3, description: "LLM vulnerability scanner with 500+ probe types for automated red teaming", tags: ["scanning", "testing", "open-source"], affiliate: "garak" },
+
+  // ── Model Scanning ────────────────────────────────────
+  { name: "HiddenLayer", category: "Model Scanning", pricing: "Enterprise", rating: 4.7, description: "ML model security platform for adversarial attack detection", tags: ["adversarial", "detection", "enterprise"], affiliate: "hiddenlayer" },
+  { name: "Calypso AI", category: "Model Scanning", pricing: "Enterprise", rating: 4.2, description: "AI model risk assessment and continuous monitoring platform", tags: ["risk", "monitoring", "compliance"], affiliate: "calypso-ai" },
+
+  // ── Identity & Auth ───────────────────────────────────
+  { name: "Permit.io", category: "Identity & Auth", pricing: "Freemium", rating: 4.4, description: "Fine-grained authorization for AI agents and MCP tool permissions", tags: ["authorization", "rbac", "abac"], affiliate: "permit-io" },
+
+  // ── Code Security ─────────────────────────────────────
+  { name: "Snyk", category: "Code Security", pricing: "Freemium", rating: 4.5, description: "Developer-first security for scanning LLM-generated code and dependencies", tags: ["sast", "sca", "developer"], affiliate: "snyk" },
+
+  // ── Privacy & VPN ─────────────────────────────────────
+  { name: "NordVPN", category: "Privacy & VPN", pricing: "Subscription", rating: 4.7, description: "Industry-leading VPN with Threat Protection, dark web monitoring, and Meshnet for secure OPSEC", tags: ["vpn", "privacy", "threat-protection", "meshnet"], affiliate: "nordvpn" },
+  { name: "ProtonVPN", category: "Privacy & VPN", pricing: "Freemium", rating: 4.6, description: "Swiss-based no-logs VPN with Secure Core routing and open-source clients", tags: ["vpn", "privacy", "open-source", "swiss"], affiliate: "protonvpn" },
+  { name: "Surfshark", category: "Privacy & VPN", pricing: "Subscription", rating: 4.4, description: "Unlimited-device VPN with CleanWeb ad/malware blocker and MultiHop chains", tags: ["vpn", "privacy", "unlimited-devices", "cleanweb"], affiliate: "surfshark" },
+  { name: "Incogni", category: "Privacy & VPN", pricing: "Subscription", rating: 4.3, description: "Automated personal data removal service — reduces OSINT attack surface for security professionals", tags: ["privacy", "data-removal", "osint-defense"], affiliate: "incogni" },
+  { name: "PureVPN", category: "Privacy & VPN", pricing: "Subscription", rating: 4.1, description: "VPN with dedicated IPs, port forwarding, and split tunneling for security labs", tags: ["vpn", "privacy", "dedicated-ip", "lab"], affiliate: "purevpn" },
+  { name: "Proton", category: "Privacy & VPN", pricing: "Freemium", rating: 4.6, description: "Full privacy ecosystem — ProtonMail, ProtonDrive, ProtonVPN, and Pass for end-to-end encrypted OPSEC", tags: ["privacy", "email", "storage", "ecosystem"], affiliate: "proton" },
 ];
 
-const categories = ["All", ...Array.from(new Set(tools.map(t => t.category)))];
+const categories = ["All", ...Array.from(new Set(tools.map((t) => t.category)))];
 
 export default function Matrix() {
   const [search, setSearch] = useState("");
@@ -39,10 +65,12 @@ export default function Matrix() {
 
   const filtered = useMemo(() => {
     return tools
-      .filter(t => {
-        const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
-          t.description.toLowerCase().includes(search.toLowerCase()) ||
-          t.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
+      .filter((t) => {
+        const q = search.toLowerCase();
+        const matchesSearch =
+          t.name.toLowerCase().includes(q) ||
+          t.description.toLowerCase().includes(q) ||
+          t.tags.some((tag) => tag.includes(q));
         const matchesCategory = selectedCategory === "All" || t.category === selectedCategory;
         return matchesSearch && matchesCategory;
       })
@@ -54,8 +82,11 @@ export default function Matrix() {
   }, [search, selectedCategory, sortField, sortDir]);
 
   const toggleSort = (field: "name" | "rating") => {
-    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
-    else { setSortField(field); setSortDir("desc"); }
+    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortField(field);
+      setSortDir("desc");
+    }
   };
 
   return (
@@ -85,7 +116,7 @@ export default function Matrix() {
               />
             </div>
             <div className="flex gap-2 flex-wrap">
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -125,14 +156,20 @@ export default function Matrix() {
                 <thead>
                   <tr className="border-b border-border/30">
                     <th className="text-left p-4">
-                      <button onClick={() => toggleSort("name")} className="flex items-center gap-1 text-xs font-mono text-muted-foreground uppercase tracking-wider hover:text-foreground">
+                      <button
+                        onClick={() => toggleSort("name")}
+                        className="flex items-center gap-1 text-xs font-mono text-muted-foreground uppercase tracking-wider hover:text-foreground"
+                      >
                         Tool <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="text-left p-4 text-xs font-mono text-muted-foreground uppercase tracking-wider">Category</th>
                     <th className="text-left p-4 text-xs font-mono text-muted-foreground uppercase tracking-wider">Pricing</th>
                     <th className="text-left p-4">
-                      <button onClick={() => toggleSort("rating")} className="flex items-center gap-1 text-xs font-mono text-muted-foreground uppercase tracking-wider hover:text-foreground">
+                      <button
+                        onClick={() => toggleSort("rating")}
+                        className="flex items-center gap-1 text-xs font-mono text-muted-foreground uppercase tracking-wider hover:text-foreground"
+                      >
                         Rating <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
@@ -147,7 +184,7 @@ export default function Matrix() {
                           <span className="font-medium text-foreground text-sm">{tool.name}</span>
                           <ExternalLink className="h-3 w-3 text-muted-foreground/40" />
                           {tool.affiliate && (
-                            <span className="text-[9px] text-muted-foreground/50 font-mono">[AFFILIATE]</span>
+                            <span className="text-[9px] text-muted-foreground/50 font-mono">[AF]</span>
                           )}
                         </div>
                       </td>
@@ -174,7 +211,8 @@ export default function Matrix() {
           </div>
 
           <p className="text-center text-xs text-muted-foreground/60 mt-6">
-            <span className="text-primary/60">⚑</span> Independence disclosure: Tools marked [AFFILIATE] include referral links. This never influences rankings or analysis scores.
+            <Shield className="inline h-3 w-3 text-primary/60 mr-1" />
+            Independence disclosure: Tools marked [AF] include referral links. This never influences rankings or analysis scores.
           </p>
         </div>
       </main>

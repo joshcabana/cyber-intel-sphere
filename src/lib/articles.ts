@@ -271,14 +271,8 @@ Three primary vectors have been identified:
   },
 ];
 
-// Affiliate codes mapping
-const affiliateCodes: Record<string, { url: string; name: string }> = {
-  "guardrails-ai": { url: "https://guardrailsai.com/?ref=aithreatbrief", name: "Guardrails AI" },
-  "permit-io": { url: "https://permit.io/?ref=aithreatbrief", name: "Permit.io" },
-  "lakera-guard": { url: "https://lakera.ai/?ref=aithreatbrief", name: "Lakera Guard" },
-  "hiddenlayer": { url: "https://hiddenlayer.com/?ref=aithreatbrief", name: "HiddenLayer" },
-  "snyk": { url: "https://snyk.io/?ref=aithreatbrief", name: "Snyk" },
-};
+// Re-export the canonical affiliate resolver
+export { resolveAffiliateLinks } from "@/lib/affiliate-links";
 
 export function getAllArticles(): Article[] {
   return articles;
@@ -290,12 +284,4 @@ export function getArticleBySlug(slug: string): Article | undefined {
 
 export function getArticlesByType(type: "blog" | "review"): Article[] {
   return articles.filter((a) => a.type === type);
-}
-
-export function resolveAffiliateLinks(body: string): string {
-  return body.replace(/\[AFFILIATE:([\w-]+)\]/g, (_match, code) => {
-    const affiliate = affiliateCodes[code];
-    if (!affiliate) return code;
-    return `[${affiliate.name}](${affiliate.url})`;
-  });
 }
