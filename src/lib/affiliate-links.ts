@@ -29,7 +29,15 @@ const defaults: Record<string, AffiliateEntry> = {
 
   // ── Security Tools (pending) ───────────────────────────
   "1password":      { name: "1Password",      url: "" },
+  "1password-business": { name: "1Password Business", url: "" },
   "malwarebytes":   { name: "Malwarebytes",   url: "" },
+
+  // ── Enterprise / B2B ──────────────────────────────────
+  "vanta":          { name: "Vanta",          url: "https://vanta.com/?ref=aithreatbrief" },
+  "drata":          { name: "Drata",          url: "https://drata.com/?ref=aithreatbrief" },
+  "crowdstrike":    { name: "CrowdStrike",    url: "https://crowdstrike.com/?ref=aithreatbrief" },
+  "wiz":            { name: "Wiz",            url: "https://wiz.io/?ref=aithreatbrief" },
+  "auth0":          { name: "Auth0 / Okta",   url: "https://auth0.com/?ref=aithreatbrief" },
 
   // ── AI Security Tools ──────────────────────────────────
   "guardrails-ai":  { name: "Guardrails AI",  url: "https://guardrailsai.com/?ref=aithreatbrief" },
