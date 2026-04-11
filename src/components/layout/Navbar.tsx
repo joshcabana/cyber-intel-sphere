@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navLinks = [
   { to: "/", label: "Intelligence" },
@@ -13,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30">
@@ -45,12 +47,23 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/login">
-            <Button variant="ghost" size="sm">Sign In</Button>
-          </Link>
-          <Link to="/pricing">
-            <Button variant="hero" size="sm">Get Pro Access</Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">Dashboard</Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">Sign In</Button>
+              </Link>
+              <Link to="/pricing">
+                <Button variant="hero" size="sm">Get Pro Access</Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -74,12 +87,23 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="pt-2 border-t border-border/30 flex flex-col gap-2">
-            <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button variant="ghost" size="sm" className="w-full">Sign In</Button>
-            </Link>
-            <Link to="/pricing" onClick={() => setMobileOpen(false)}>
-              <Button variant="hero" size="sm" className="w-full">Get Pro Access</Button>
-            </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full">Dashboard</Button>
+                </Link>
+                <Button variant="ghost" size="sm" className="w-full" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full">Sign In</Button>
+                </Link>
+                <Link to="/pricing" onClick={() => setMobileOpen(false)}>
+                  <Button variant="hero" size="sm" className="w-full">Get Pro Access</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
