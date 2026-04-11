@@ -58,18 +58,6 @@ export default function About() {
             </div>
           </div>
 
-          <div className="mt-10 flex justify-center">
-            <a
-              href="https://github.com/joshcabana/cyber-intel-sphere"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="hero" size="lg">
-                <ExternalLink className="h-4 w-4" />
-                View on GitHub
-              </Button>
-            </a>
-          </div>
         </div>
       </main>
       <Footer />

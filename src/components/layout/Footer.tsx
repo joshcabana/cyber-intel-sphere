@@ -25,7 +25,7 @@ export default function Footer() {
               <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Research</Link>
               <Link to="/matrix" className="text-sm text-muted-foreground hover:text-primary transition-colors">Stack Matrix</Link>
               <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link>
-              <a href="https://github.com/joshcabana/cyber-intel-sphere" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">GitHub</a>
+              
             </div>
           </div>
 
