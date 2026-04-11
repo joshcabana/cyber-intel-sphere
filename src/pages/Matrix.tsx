@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Download, ExternalLink, ArrowUpDown, Shield } from "lucide-react";
 import UpgradeWall from "@/components/UpgradeWall";
+import { getAffiliate } from "@/lib/affiliate-links";
 
 export type Tool = {
   name: string;
@@ -177,12 +178,20 @@ export default function Matrix() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((tool) => (
+                  {filtered.map((tool) => {
+                    const affiliateEntry = tool.affiliate ? getAffiliate(tool.affiliate) : null;
+                    return (
                     <tr key={tool.name} className="border-b border-border/20 hover:bg-secondary/30 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground text-sm">{tool.name}</span>
-                          <ExternalLink className="h-3 w-3 text-muted-foreground/40" />
+                          {affiliateEntry ? (
+                            <a href={affiliateEntry.url} target="_blank" rel="noopener noreferrer" className="font-medium text-foreground text-sm hover:text-primary transition-colors">
+                              {tool.name}
+                            </a>
+                          ) : (
+                            <span className="font-medium text-foreground text-sm">{tool.name}</span>
+                          )}
+                          {affiliateEntry && <ExternalLink className="h-3 w-3 text-muted-foreground/40" />}
                           {tool.affiliate && (
                             <span className="text-[9px] text-muted-foreground/50 font-mono">[AF]</span>
                           )}
@@ -204,7 +213,7 @@ export default function Matrix() {
                       </td>
                       <td className="p-4 text-sm text-muted-foreground max-w-xs truncate hidden lg:table-cell">{tool.description}</td>
                     </tr>
-                  ))}
+                  )})
                 </tbody>
               </table>
             </div>
