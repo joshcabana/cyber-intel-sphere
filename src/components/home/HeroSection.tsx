@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, ArrowRight, Zap } from "lucide-react";
+import heroBg from "@/assets/hero-bg.jpg";
 
 export default function HeroSection() {
   return (
