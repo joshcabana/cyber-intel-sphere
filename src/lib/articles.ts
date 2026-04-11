@@ -1,3 +1,10 @@
+/**
+ * Article data source — combines hardcoded articles with imported old-repo content.
+ * Includes validation helpers (ported from old repo) and paywall logic.
+ */
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
 export type Article = {
   slug: string;
   title: string;
@@ -12,9 +19,120 @@ export type Article = {
   takeaways: string[];
   headings: { id: string; text: string; level: number }[];
   body: string;
+  /** Extended fields from old repo (optional for backward compat) */
+  section?: "editorial" | "review";
+  monetization?: "none" | "affiliate";
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  featured?: boolean;
+  isPaywalled?: boolean;
 };
 
-const articles: Article[] = [
+// ── Validation helpers (ported from old repo lib/articles.ts) ────────────────
+
+export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const READ_TIME_PATTERN = /^\d+\s+min$/;
+export const BRAND_AUTHOR_NAME = "AI Security Brief";
+export const CONTENT_SECTION_VALUES = ["editorial", "review"] as const;
+export const MONETIZATION_VALUES = ["none", "affiliate"] as const;
+export const PENDING_HUMAN_REVIEW = "PENDING_HUMAN_REVIEW";
+
+export function assertString(value: unknown, field: string, context: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(`Expected "${field}" to be a non-empty string in ${context}.`);
+  }
+  return value.trim();
+}
+
+export function assertSlug(value: unknown, field: string, context: string): string {
+  const v = assertString(value, field, context);
+  if (!ARTICLE_SLUG_PATTERN.test(v)) {
+    throw new Error(`Expected "${field}" to match slug pattern in ${context}.`);
+  }
+  return v;
+}
+
+export function assertDateString(value: unknown, field: string, context: string): string {
+  const v = assertString(value, field, context);
+  if (Number.isNaN(Date.parse(v))) {
+    throw new Error(`Expected "${field}" to be a valid date in ${context}.`);
+  }
+  return v;
+}
+
+export function assertDateOrPending(value: unknown, field: string, context: string): string {
+  const v = assertString(value, field, context);
+  if (v === PENDING_HUMAN_REVIEW) return v;
+  if (Number.isNaN(Date.parse(v))) {
+    throw new Error(`Expected "${field}" to be a date or PENDING_HUMAN_REVIEW in ${context}.`);
+  }
+  return v;
+}
+
+export function assertBoolean(value: unknown, field: string, context: string): boolean {
+  if (typeof value !== "boolean") {
+    throw new Error(`Expected "${field}" to be a boolean in ${context}.`);
+  }
+  return value;
+}
+
+export function assertStringArray(value: unknown, field: string, context: string): string[] {
+  if (!Array.isArray(value) || value.length === 0 || value.some((item) => typeof item !== "string" || item.trim().length === 0)) {
+    throw new Error(`Expected "${field}" to be a non-empty string array in ${context}.`);
+  }
+  return value.map((item) => (item as string).trim());
+}
+
+export function assertReadTime(value: unknown, field: string, context: string): string {
+  const v = assertString(value, field, context);
+  if (!READ_TIME_PATTERN.test(v)) {
+    throw new Error(`Expected "${field}" to match "<minutes> min" in ${context}.`);
+  }
+  return v;
+}
+
+export function assertEnum<T extends readonly string[]>(
+  value: unknown,
+  field: string,
+  context: string,
+  allowedValues: T,
+): T[number] {
+  const v = assertString(value, field, context);
+  if (!allowedValues.includes(v)) {
+    throw new Error(`Expected "${field}" to be one of ${allowedValues.join(", ")} in ${context}.`);
+  }
+  return v as T[number];
+}
+
+export function assertPlainText(value: unknown, field: string, context: string): string {
+  const v = assertString(value, field, context)
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<\/?[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!v) throw new Error(`Expected "${field}" to contain plain text in ${context}.`);
+  return v;
+}
+
+// ── Paywall logic ────────────────────────────────────────────────────────────
+
+const PAYWALL_TOKEN = "[beehiiv:paywall]";
+
+/**
+ * Extract free (pre-paywall) content from a markdown body.
+ * If no paywall token is present, returns the full body.
+ */
+export function extractFreeContent(body: string): { freeBody: string; isPaywalled: boolean } {
+  const idx = body.indexOf(PAYWALL_TOKEN);
+  if (idx === -1) return { freeBody: body, isPaywalled: false };
+  return { freeBody: body.slice(0, idx).trim(), isPaywalled: true };
+}
+
+// ── Hardcoded articles (original Lovable project) ────────────────────────────
+
+const hardcodedArticles: Article[] = [
   {
     slug: "rag-injection-vectors",
     title: "Critical: RAG Pipeline Injection Vectors in Production LLM Systems",
@@ -271,17 +389,48 @@ Three primary vectors have been identified:
   },
 ];
 
-// Re-export the canonical affiliate resolver
+// ── Imported articles from old repo ──────────────────────────────────────────
+
+import { importedArticles } from "./imported-articles";
+
+// ── Merge & deduplicate (hardcoded takes precedence) ─────────────────────────
+
+const hardcodedSlugs = new Set(hardcodedArticles.map((a) => a.slug));
+const mergedArticles: Article[] = [
+  ...hardcodedArticles,
+  ...importedArticles.filter((a) => !hardcodedSlugs.has(a.slug)),
+].sort((a, b) => {
+  const da = new Date(a.date).getTime();
+  const db = new Date(b.date).getTime();
+  return db - da || a.slug.localeCompare(b.slug);
+});
+
+// ── Re-export the canonical affiliate resolver ───────────────────────────────
+
 export { resolveAffiliateLinks } from "@/lib/affiliate-links";
 
+// ── Public API ───────────────────────────────────────────────────────────────
+
 export function getAllArticles(): Article[] {
-  return articles;
+  return mergedArticles;
 }
 
 export function getArticleBySlug(slug: string): Article | undefined {
-  return articles.find((a) => a.slug === slug);
+  return mergedArticles.find((a) => a.slug === slug);
 }
 
 export function getArticlesByType(type: "blog" | "review"): Article[] {
-  return articles.filter((a) => a.type === type);
+  return mergedArticles.filter((a) => a.type === type);
+}
+
+export function getArticlesBySection(section: "editorial" | "review"): Article[] {
+  return mergedArticles.filter((a) => a.section === section);
+}
+
+export function getFeaturedArticles(): Article[] {
+  return mergedArticles.filter((a) => a.featured);
+}
+
+export function getArticleCategories(): string[] {
+  return Array.from(new Set(mergedArticles.map((a) => a.category))).sort();
 }
