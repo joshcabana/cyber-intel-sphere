@@ -213,7 +213,8 @@ export default function Matrix() {
                       </td>
                       <td className="p-4 text-sm text-muted-foreground max-w-xs truncate hidden lg:table-cell">{tool.description}</td>
                     </tr>
-                  )})
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
