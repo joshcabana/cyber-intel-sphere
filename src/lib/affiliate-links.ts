@@ -18,20 +18,25 @@ export type AffiliateEntry = {
 };
 
 const defaults: Record<string, AffiliateEntry> = {
-  // ── VPN / Privacy ──────────────────────────────────────
-  "nordvpn":        { name: "NordVPN",        url: "https://nordvpn.com/?ref=aithreatbrief",       coupon: "AITHREAT" },
-  "protonvpn":      { name: "ProtonVPN",      url: "https://protonvpn.com/?ref=aithreatbrief",     coupon: "OPSEC20" },
-  "surfshark":      { name: "Surfshark",      url: "https://surfshark.com/?ref=aithreatbrief",     coupon: "AITHREAT" },
-  "incogni":        { name: "Incogni",        url: "https://incogni.com/?ref=aithreatbrief",       coupon: "AITHREAT" },
-  "purevpn":        { name: "PureVPN",        url: "https://purevpn.com/?ref=aithreatbrief",       coupon: "AITHREAT" },
-  "proton":         { name: "Proton",         url: "https://proton.me/?ref=aithreatbrief",         coupon: "OPSEC20" },
+  // ── VPN / Privacy (live tracking URLs) ─────────────────
+  "nordvpn":        { name: "NordVPN",        url: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143381&url_id=902", coupon: "AITHREAT" },
+  "protonvpn":      { name: "ProtonVPN",      url: "https://go.getproton.me/aff_c?url_id=471" },
+  "proton":         { name: "Proton",         url: "https://go.getproton.me/aff_c?url_id=471" },
+  "proton-mail":    { name: "Proton Mail",    url: "https://go.getproton.me/aff_c?url_id=921" },
+  "purevpn":        { name: "PureVPN",        url: "https://www.purevpn.com/order-now.php?affiliate_id=49384204" },
+  "surfshark":      { name: "Surfshark",      url: "" },
+  "incogni":        { name: "Incogni",        url: "" },
+
+  // ── Security Tools (pending) ───────────────────────────
+  "1password":      { name: "1Password",      url: "" },
+  "malwarebytes":   { name: "Malwarebytes",   url: "" },
 
   // ── AI Security Tools ──────────────────────────────────
-  "guardrails-ai":  { name: "Guardrails AI",  url: "https://guardrailsai.com/?ref=aithreatbrief",  coupon: "AITHREAT20" },
-  "permit-io":      { name: "Permit.io",      url: "https://permit.io/?ref=aithreatbrief",         coupon: "OPSEC15" },
+  "guardrails-ai":  { name: "Guardrails AI",  url: "https://guardrailsai.com/?ref=aithreatbrief" },
+  "permit-io":      { name: "Permit.io",      url: "https://permit.io/?ref=aithreatbrief" },
   "lakera-guard":   { name: "Lakera Guard",   url: "https://lakera.ai/?ref=aithreatbrief" },
-  "hiddenlayer":    { name: "HiddenLayer",    url: "https://hiddenlayer.com/?ref=aithreatbrief",   coupon: "SECURELLM" },
-  "snyk":           { name: "Snyk",           url: "https://snyk.io/?ref=aithreatbrief",           coupon: "AIBRIEFPRO" },
+  "hiddenlayer":    { name: "HiddenLayer",    url: "https://hiddenlayer.com/?ref=aithreatbrief" },
+  "snyk":           { name: "Snyk",           url: "https://snyk.io/?ref=aithreatbrief" },
   "calypso-ai":     { name: "Calypso AI",     url: "https://calypsoai.com/?ref=aithreatbrief" },
   "protect-ai":     { name: "Protect AI",     url: "https://protectai.com/?ref=aithreatbrief" },
   "prompt-armor":   { name: "Prompt Armor",   url: "https://promptarmor.com/?ref=aithreatbrief" },
@@ -59,7 +64,10 @@ export function getAffiliate(code: string): AffiliateEntry | null {
     // env not available (e.g. SSR edge)
   }
 
-  return defaults[key] ?? null;
+  const entry = defaults[key] ?? null;
+  // Return null for entries with empty URLs (not yet live)
+  if (entry && !entry.url) return null;
+  return entry;
 }
 
 /**
