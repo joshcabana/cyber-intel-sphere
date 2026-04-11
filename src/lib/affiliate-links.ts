@@ -19,13 +19,13 @@ export type AffiliateEntry = {
 
 const defaults: Record<string, AffiliateEntry> = {
   // ── VPN / Privacy (live tracking URLs) ─────────────────
-  "nordvpn":        { name: "NordVPN",        url: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143381&url_id=902", coupon: "AITHREAT" },
-  "protonvpn":      { name: "ProtonVPN",      url: "https://go.getproton.me/aff_c?url_id=471" },
-  "proton":         { name: "Proton",         url: "https://go.getproton.me/aff_c?url_id=471" },
-  "proton-mail":    { name: "Proton Mail",    url: "https://go.getproton.me/aff_c?url_id=921" },
-  "purevpn":        { name: "PureVPN",        url: "https://www.purevpn.com/order-now.php?affiliate_id=49384204" },
-  "surfshark":      { name: "Surfshark",      url: "" },
-  "incogni":        { name: "Incogni",        url: "" },
+  "nordvpn":        { name: "NordVPN",        url: "https://go.nordvpn.net/aff_c?aff_id=143381", coupon: "AITHREAT" },
+  "protonvpn":      { name: "ProtonVPN",      url: "https://go.getproton.me/aff_c?offer_id=32&aff_id=2914&url_id=471" },
+  "proton":         { name: "Proton",         url: "https://go.getproton.me/aff_c?offer_id=32&aff_id=2914&url_id=471" },
+  "proton-mail":    { name: "Proton Mail",    url: "https://go.getproton.me/aff_c?offer_id=32&aff_id=2914&url_id=921" },
+  "purevpn":        { name: "PureVPN",        url: "https://www.purevpn.com/order-now.php?utm_medium=referral&utm_source=aff-49384204&utm_campaign=AN&aff=49384204&affiliate_id=49384204&afsrc=1" },
+  "surfshark":      { name: "Surfshark",      url: "https://get.surfshark.net/aff_c?offer_id=926&aff_id=45490" },
+  "incogni":        { name: "Incogni",        url: "https://get.surfshark.net/aff_c?offer_id=930&aff_id=45490" },
 
   // ── Security Tools (pending) ───────────────────────────
   "1password":      { name: "1Password",      url: "" },
