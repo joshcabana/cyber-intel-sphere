@@ -4,7 +4,8 @@ import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Download, Lock, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Search, Download, Lock, ExternalLink, ArrowUpDown } from "lucide-react";
+import UpgradeWall from "@/components/UpgradeWall";
 
 type Tool = {
   name: string;
@@ -105,16 +106,16 @@ export default function Matrix() {
             <span className="text-xs text-muted-foreground">
               Showing {filtered.length} of {tools.length} tools
             </span>
-            <div className="flex items-center gap-2">
-              <Button variant="cyber" size="sm" disabled className="opacity-50">
-                <Lock className="h-3 w-3 mr-1" /> Export CSV
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] ml-1">PRO</Badge>
-              </Button>
-              <Button variant="cyber" size="sm" disabled className="opacity-50">
-                <Lock className="h-3 w-3 mr-1" /> Export PDF
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] ml-1">PRO</Badge>
-              </Button>
-            </div>
+            <UpgradeWall feature="CSV/PDF export">
+              <div className="flex items-center gap-2">
+                <Button variant="cyber" size="sm">
+                  <Download className="h-3 w-3 mr-1" /> Export CSV
+                </Button>
+                <Button variant="cyber" size="sm">
+                  <Download className="h-3 w-3 mr-1" /> Export PDF
+                </Button>
+              </div>
+            </UpgradeWall>
           </div>
 
           {/* Table */}

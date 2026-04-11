@@ -1,26 +1,50 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Flame, Copy, Users, Bookmark, Shield, ArrowRight,
   TrendingUp, Clock, CheckCircle2
 } from "lucide-react";
-
-const streakCount = 7;
-const referralCode = "OPSEC-X4K9";
-const referralCount = 3;
-
-const savedBriefs = [
-  { title: "RAG Pipeline Injection Vectors", date: "Apr 11" },
-  { title: "Securing Agentic Workflows", date: "Apr 9" },
-];
+import { toast } from "sonner";
 
 export default function Dashboard() {
+  const { profile, isPro, refreshProfile } = useAuth();
+  const [referralCount, setReferralCount] = useState(0);
+  const [savedBriefs, setSavedBriefs] = useState<{ title: string; saved_at: string }[]>([]);
+
+  useEffect(() => {
+    if (!profile) return;
+    // Fetch referral count
+    supabase
+      .from("referrals")
+      .select("id", { count: "exact" })
+      .eq("referrer_id", profile.user_id)
+      .then(({ count }) => setReferralCount(count || 0));
+
+    // Fetch saved briefs
+    supabase
+      .from("saved_briefs")
+      .select("title, saved_at")
+      .eq("user_id", profile.user_id)
+      .order("saved_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => setSavedBriefs(data || []));
+  }, [profile]);
+
   const copyReferral = () => {
-    navigator.clipboard.writeText(`https://aithreatbrief.com/r/${referralCode}`);
+    if (profile?.referral_code) {
+      navigator.clipboard.writeText(`${window.location.origin}/r/${profile.referral_code}`);
+      toast.success("Referral link copied!");
+    }
   };
+
+  const streakCount = profile?.streak_count ?? 0;
+  const referralCode = profile?.referral_code ?? "---";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -33,9 +57,11 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-foreground">Command Center</h1>
               <p className="text-sm text-muted-foreground">Your personalized intelligence dashboard</p>
             </div>
-            <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
-              <Shield className="h-3.5 w-3.5 mr-1" /> PRO
-            </Badge>
+            {isPro && (
+              <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+                <Shield className="h-3.5 w-3.5 mr-1" /> PRO
+              </Badge>
+            )}
           </div>
 
           {/* Widget grid */}
@@ -121,19 +147,33 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <Bookmark className="h-4 w-4 text-primary" /> Saved
               </h2>
-              {savedBriefs.map((brief, i) => (
+              {savedBriefs.length > 0 ? savedBriefs.map((brief, i) => (
                 <div key={i} className="glass-panel rounded-lg p-4 cyber-border">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary/60 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-foreground">{brief.title}</p>
-                      <p className="text-xs text-muted-foreground">{brief.date}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(brief.saved_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="glass-panel rounded-lg p-4 cyber-border text-center">
+                  <p className="text-sm text-muted-foreground">No saved briefs yet</p>
+                </div>
+              )}
             </div>
           </div>
+
+          {!isPro && (
+            <div className="mt-8 glass-panel rounded-xl p-6 cyber-border cyber-glow text-center">
+              <h3 className="font-bold text-foreground mb-2">Upgrade to Pro</h3>
+              <p className="text-sm text-muted-foreground mb-4">Unlock full research access, advanced Matrix filters, and priority briefings.</p>
+              <Link to="/pricing">
+                <Button variant="hero">Upgrade Now <ArrowRight className="h-4 w-4" /></Button>
+              </Link>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

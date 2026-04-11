@@ -1,17 +1,44 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Shield, ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const refApplied = searchParams.get("ref") === "applied";
+
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSent(true);
-    // TODO: Supabase magic link auth
+    if (!email) return;
+    setLoading(true);
+    
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + "/dashboard" },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setSent(true);
+      // Store referral code from cookie into referred_by on next login
+    }
+    setLoading(false);
   };
 
   return (
@@ -28,6 +55,9 @@ export default function Login() {
           <p className="text-sm text-muted-foreground mt-2">
             Sign in with a magic link — no password needed.
           </p>
+          {refApplied && (
+            <p className="text-xs text-primary mt-2 font-mono">✓ Referral applied — sign up to activate</p>
+          )}
         </div>
 
         <div className="glass-panel rounded-xl p-6 cyber-border">
@@ -57,8 +87,8 @@ export default function Login() {
                   />
                 </div>
               </div>
-              <Button variant="hero" type="submit" className="w-full h-11">
-                Send Magic Link
+              <Button variant="hero" type="submit" className="w-full h-11" disabled={loading}>
+                {loading ? "Sending..." : "Send Magic Link"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </form>
