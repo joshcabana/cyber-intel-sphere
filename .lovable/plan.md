@@ -1,32 +1,48 @@
 
 
-## Update Affiliate Links with Real Tracking URLs
+## Add Enterprise Tools to Matrix and Make Links Clickable
 
-Update `src/lib/affiliate-links.ts` to replace placeholder `?ref=aithreatbrief` URLs with the real affiliate tracking URLs provided.
+### Current State
+- `src/lib/affiliate-links.ts` — all VPN/privacy affiliate URLs are already correct and live
+- `src/pages/Matrix.tsx` — has 18 tools across 8 categories; missing enterprise/B2B tools
 
 ### Changes
 
-**Single file: `src/lib/affiliate-links.ts`**
+**File 1: `src/lib/affiliate-links.ts`**
+Add new entries to the `defaults` record:
+- `vanta` → `https://vanta.com/?ref=aithreatbrief`
+- `drata` → `https://drata.com/?ref=aithreatbrief`
+- `1password-business` → empty (pending)
+- `crowdstrike` → `https://crowdstrike.com/?ref=aithreatbrief`
+- `wiz` → `https://wiz.io/?ref=aithreatbrief`
+- `auth0` → `https://auth0.com/?ref=aithreatbrief`
 
-Update the `defaults` record:
+**File 2: `src/pages/Matrix.tsx`**
+Add 8 new tool entries to the `tools` array with proper categories:
 
-| Code | URL | Notes |
-|------|-----|-------|
-| `nordvpn` | `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143381&url_id=902` | Live |
-| `protonvpn` | `https://go.getproton.me/aff_c?url_id=471` | Live |
-| `proton` | `https://go.getproton.me/aff_c?url_id=471` | Same as ProtonVPN |
-| `purevpn` | `https://www.purevpn.com/order-now.php?affiliate_id=49384204` | Live |
-| `surfshark` | `""` (empty string — not yet live) | Keep entry, no URL |
-| `incogni` | `""` (empty string — not yet live) | Keep entry, no URL |
+| Tool | Category | Pricing | Affiliate Code |
+|------|----------|---------|----------------|
+| Vanta | Compliance | Enterprise | `vanta` |
+| Drata | Compliance | Enterprise | `drata` |
+| 1Password Business | Identity & Auth | Enterprise | `1password-business` |
+| CrowdStrike | Endpoint & XDR | Enterprise | `crowdstrike` |
+| Wiz | Cloud Security | Enterprise | `wiz` |
+| Auth0 / Okta | Identity & Auth | Freemium | `auth0` |
+| Protect AI | LLM Security | already present | — |
+| Lakera Guard | AI Firewall | already present | — |
 
-Add new entries:
-- `proton-mail` → `https://go.getproton.me/aff_c?url_id=921`
-- `1password` → empty (pending)
-- `malwarebytes` → empty (pending)
+Protect AI and Lakera are already in the Matrix, so only 6 new rows are added.
 
-For entries with empty URLs, the resolver will return `null` so `[AFFILIATE:surfshark]` gracefully falls back to plain text until the URL is added.
+Also: make tool names clickable — wrap each name in an `<a>` tag that resolves the affiliate link via `getAffiliate(tool.affiliate)` and opens in a new tab. Tools without a live affiliate link remain plain text.
 
-Remove placeholder coupon codes from entries that don't have confirmed coupons. Keep the `AITHREAT` coupon on NordVPN since it was in the original spec.
+### What stays unchanged
+- All Pro gating on exports/filters
+- Dark premium UI with cyan accents
+- Runtime `[AFFILIATE:CODE]` resolver logic
+- All existing 18 tools and their data
 
-No other files need changes — the resolver, articles, and Matrix already import from this file.
+### Technical Detail
+- Import `getAffiliate` from `@/lib/affiliate-links` in Matrix.tsx
+- In the table row, conditionally wrap tool name in `<a href={affiliateUrl} target="_blank" rel="noopener noreferrer">` when a live URL exists
+- Categories list auto-derives from tool data, so new categories appear automatically
 
