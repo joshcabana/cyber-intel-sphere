@@ -41,6 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkSubscription = async () => {
+    try {
+      const { data } = await supabase.functions.invoke("check-subscription");
+      if (data?.subscription_tier) {
+        // Profile will be refreshed after sync
+      }
+    } catch (e) {
+      console.error("Subscription check failed:", e);
+    }
+  };
+
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
@@ -49,7 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single();
     if (data) {
       setProfile(data);
-      // Streak logic: if 7+ days since last_login, increment
       await updateStreak(data);
     }
   };
@@ -80,8 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => fetchProfile(session.user.id), 0);
+      if (session?.user) {
+          // Check subscription from Stripe, then fetch profile
+          checkSubscription().then(() => fetchProfile(session.user.id));
         } else {
           setProfile(null);
         }
@@ -92,7 +103,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+      if (session?.user) {
+        checkSubscription().then(() => fetchProfile(session.user.id));
+      }
       setLoading(false);
     });
 
