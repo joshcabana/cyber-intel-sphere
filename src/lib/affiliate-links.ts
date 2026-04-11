@@ -64,7 +64,10 @@ export function getAffiliate(code: string): AffiliateEntry | null {
     // env not available (e.g. SSR edge)
   }
 
-  return defaults[key] ?? null;
+  const entry = defaults[key] ?? null;
+  // Return null for entries with empty URLs (not yet live)
+  if (entry && !entry.url) return null;
+  return entry;
 }
 
 /**
