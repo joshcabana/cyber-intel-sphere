@@ -4,10 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Grid3X3, Filter, Download, ExternalLink } from "lucide-react";
 
 const previewTools = [
-  { name: "HiddenLayer", category: "Model Scanning", pricing: "Enterprise", rating: 4.7 },
-  { name: "Lakera Guard", category: "AI Firewall", pricing: "Enterprise", rating: 4.6 },
-  { name: "Protect AI", category: "LLM Security", pricing: "Enterprise", rating: 4.5 },
-  { name: "NeMo Guardrails", category: "Agent Frameworks", pricing: "Open Source", rating: 4.4 },
+  { name: "NordVPN", category: "Privacy & VPN", rating: 4.7 },
+  { name: "HiddenLayer", category: "Model Scanning", rating: 4.7 },
+  { name: "Lakera Guard", category: "AI Firewall", rating: 4.6 },
+  { name: "ProtonVPN", category: "Privacy & VPN", rating: 4.6 },
 ];
 
 export default function MatrixTeaser() {
