@@ -1,7 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
-import { Shield, ExternalLink } from "lucide-react";
+import { Shield } from "lucide-react";
 
 const philosophyRules = [
   "Every claim must trace to a primary source or reproducible test.",
