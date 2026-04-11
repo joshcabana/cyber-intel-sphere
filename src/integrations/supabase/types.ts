@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      briefings: {
+        Row: {
+          author: string
+          category: string
+          content: string | null
+          created_at: string
+          id: string
+          published_at: string
+          read_time_minutes: number
+          slug: string
+          teaser: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          published_at?: string
+          read_time_minutes?: number
+          slug: string
+          teaser?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          published_at?: string
+          read_time_minutes?: number
+          slug?: string
+          teaser?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -86,6 +128,35 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_briefings: {
+        Row: {
+          briefing_id: string
+          id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          briefing_id: string
+          id?: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          briefing_id?: string
+          id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_briefings_briefing_id_fkey"
+            columns: ["briefing_id"]
+            isOneToOne: false
+            referencedRelation: "briefings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_briefs: {
         Row: {
           id: string
@@ -107,6 +178,45 @@ export type Database = {
           slug?: string | null
           title?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      tools: {
+        Row: {
+          affiliate_marked: boolean
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          pricing: string | null
+          rating: number
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          affiliate_marked?: boolean
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          pricing?: string | null
+          rating?: number
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          affiliate_marked?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          pricing?: string | null
+          rating?: number
+          updated_at?: string
+          url?: string | null
         }
         Relationships: []
       }
