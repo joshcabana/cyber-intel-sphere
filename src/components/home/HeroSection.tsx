@@ -6,9 +6,10 @@ import heroBg from "@/assets/hero-bg.jpg";
 export default function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 intelligence-grid opacity-40" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
+      {/* Background image */}
+      <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" width={1920} height={1080} />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+      <div className="absolute inset-0 intelligence-grid opacity-20" />
       <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary/3 rounded-full blur-[100px]" />
 
       <div className="container mx-auto px-4 relative z-10">
