@@ -63,7 +63,7 @@ export default function HeroSection() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-primary/40" />
-              <span>Trusted by 2,400+ Security Teams</span>
+              <span>Trusted by security teams at scale — growing fast</span>
             </div>
           </div>
         </div>

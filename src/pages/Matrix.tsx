@@ -103,6 +103,12 @@ export default function Matrix() {
             <p className="text-muted-foreground max-w-xl">
               The most comprehensive AI security tool database. Searchable, filterable, and brutally honest. No pay-for-play rankings.
             </p>
+            <div className="flex items-center gap-4 mt-3">
+              <p className="text-xs font-mono text-muted-foreground/70">
+                18 tools currently live — 89+ more in active onboarding (updated weekly)
+              </p>
+              <span className="text-[10px] font-mono text-muted-foreground/40">Last updated: April 12, 2026</span>
+            </div>
           </div>
 
           {/* Controls */}

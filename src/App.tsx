@@ -13,6 +13,7 @@ import Matrix from "./pages/Matrix";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Pro from "./pages/Pro";
+import About from "./pages/About";
 import Referral from "./pages/Referral";
 import NotFound from "./pages/NotFound";
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route path="/pro" element={<ProtectedRoute><Pro /></ProtectedRoute>} />
+            <Route path="/about" element={<About />} />
             <Route path="/r/:code" element={<Referral />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

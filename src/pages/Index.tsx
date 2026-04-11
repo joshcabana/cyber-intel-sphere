@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/HeroSection";
 import IntelligenceFeed from "@/components/home/IntelligenceFeed";
+import SocialProof from "@/components/home/SocialProof";
 import MatrixTeaser from "@/components/home/MatrixTeaser";
 import LeadMagnet from "@/components/home/LeadMagnet";
 import ScarcityBanner from "@/components/ScarcityBanner";
@@ -16,6 +17,7 @@ const Index = () => {
         <ScarcityBanner />
         <HeroSection />
         <IntelligenceFeed />
+        <SocialProof />
         <MatrixTeaser />
         <LeadMagnet />
       </main>

@@ -28,9 +28,9 @@ export default function MatrixTeaser() {
                 The most comprehensive, independently curated database of AI security tools, frameworks, and platforms. Searchable, filterable, and brutally honest.
               </p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5"><Grid3X3 className="h-4 w-4 text-primary/60" /> 89+ Tools</span>
+                <span className="flex items-center gap-1.5"><Grid3X3 className="h-4 w-4 text-primary/60" /> 18 Tools Live</span>
                 <span className="flex items-center gap-1.5"><Filter className="h-4 w-4 text-primary/60" /> 12 Categories</span>
-                <span className="flex items-center gap-1.5"><Download className="h-4 w-4 text-primary/60" /> CSV/PDF Export</span>
+                <span className="flex items-center gap-1.5"><Download className="h-4 w-4 text-primary/60" /> CSV/PDF Export (Pro)</span>
               </div>
               <Link to="/matrix">
                 <Button variant="hero" size="lg">

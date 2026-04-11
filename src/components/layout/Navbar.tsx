@@ -9,6 +9,7 @@ const navLinks = [
   { to: "/matrix", label: "Stack Matrix" },
   { to: "/pricing", label: "Pricing" },
   { to: "/blog", label: "Research" },
+  { to: "/about", label: "About" },
 ];
 
 export default function Navbar() {
