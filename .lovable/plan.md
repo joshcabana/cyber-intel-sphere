@@ -1,59 +1,58 @@
 
 
-## Professional QA Polish — Full Implementation Plan
+## Environment Setup — Revised Plan
 
-### 1. Fix Build Error (blocking)
-The `check-subscription/index.ts` edge function uses `npm:@supabase/supabase-js@2.57.2` which fails in Deno. Change to `https://esm.sh/@supabase/supabase-js@2.49.4` (same pattern as `stripe-webhook`).
+### Important note on Supabase key naming
+The auto-generated `src/integrations/supabase/client.ts` uses `VITE_SUPABASE_PUBLISHABLE_KEY` (set automatically by Lovable Cloud). This file cannot be edited. The `.env.example` and runtime check will document both names (`VITE_SUPABASE_PUBLISHABLE_KEY` for the Vite frontend, `SUPABASE_ANON_KEY` for edge functions/backend) and explain they hold the same value.
 
-### 2. Homepage Updates
+### File 1: `.env.example` (full rewrite)
 
-**MatrixTeaser.tsx** — Change stats line from `89+ Tools • 12 Categories • CSV/PDF Export` to `18 Tools Live • 12 Categories • CSV/PDF Export (Pro)`.
+Sections with clear comments:
 
-**HeroSection.tsx** — Change "Trusted by 2,400+ Security Teams" to "Trusted by security teams at scale — growing fast".
+- **Supabase** — `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (auto-set by Lovable Cloud), `SUPABASE_ANON_KEY` (same value, for edge functions), `SUPABASE_SERVICE_ROLE_KEY` (edge functions only, never expose to client)
+- **App URL** — Both `VITE_APP_URL=https://aithreatbrief.com` and `NEXT_PUBLIC_APP_URL` (same value; backend scripts use NEXT_PUBLIC_ convention)
+- **Stripe** — `VITE_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, price IDs
+- **Beehiiv** — `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, automation IDs
+- **Affiliate** — Without VITE_ prefix (`AFFILIATE_NORDVPN`, etc.) since they're used by Node/Bun scripts; note that UI code should add `VITE_AFFILIATE_*` if client-side resolution is needed
+- **GitHub Automation** — `GITHUB_TOKEN`
+- **Analytics** — Plausible domain, LinkedIn partner/conversion IDs
+- **Upstash** — Redis rate limiting vars
 
-**New component: `src/components/home/SocialProof.tsx`** — 4 testimonial cards in a grid with dark card layout and orange accent border. Exact quotes as specified. Placed in Index.tsx between IntelligenceFeed and MatrixTeaser.
+### File 2: `README.md` (rewrite)
 
-### 3. New /about Page
+```
+# AI Threat Brief — aithreatbrief.com
 
-**`src/pages/About.tsx`** — Full about page with the exact copy provided, AGENTS.md 7-rule philosophy summary, and a "View on GitHub" button linking to `https://github.com/joshcabana/cyber-intel-sphere`. Dark theme, consistent styling.
+Intelligence for the Agentic Era.
 
-**App.tsx** — Add route `<Route path="/about" element={<About />} />`.
+## First Time Setup
 
-### 4. Matrix Page Updates
+1. Clone the repo
+2. `cp .env.example .env.local`
+3. Fill in values (see comments in .env.example)
+4. `bun install`
+5. `bun run dev`
 
-**Matrix.tsx** — Add note above the table: "18 tools currently live — 89+ more in active onboarding (updated weekly)". Tool count is already 18 (confirmed from code). No tool data changes.
+## Architecture
 
-### 5. Database Schema (3 new tables via migration)
+- **Frontend**: React + Vite + Tailwind (src/)
+- **Backend**: Lovable Cloud (Supabase) — edge functions in supabase/functions/
+- **Automation**: Node/Bun scripts in scripts/automation/ (GitHub Actions)
 
-Create tables:
-- `briefings` (id uuid, slug text unique, title text, category text, published_at timestamptz, read_time_minutes int, teaser text, content text, author text)
-- `tools` (id uuid, name text, category text, rating numeric, pricing text, description text, affiliate_marked boolean default false, url text)
-- `saved_briefings` (id uuid, user_id uuid, briefing_id uuid references briefings, saved_at timestamptz default now(), unique(user_id, briefing_id))
+## Edge Function Secrets
 
-RLS: `saved_briefings` — users can CRUD their own rows. `briefings` and `tools` — public SELECT, no public INSERT/UPDATE/DELETE.
+Secrets like STRIPE_SECRET_KEY and SUPABASE_SERVICE_ROLE_KEY are configured
+via Lovable Cloud, not .env. They're available to edge functions at runtime.
+```
 
-### 6. Navigation & Footer
+### File 3: `src/main.tsx` (add env check)
 
-**Navbar.tsx** — Add `{ to: "/about", label: "About" }` to `navLinks` array.
+Add a dev-mode console warning before `createRoot` if `VITE_SUPABASE_URL` or `VITE_SUPABASE_PUBLISHABLE_KEY` are missing. Non-blocking — app still renders.
 
-**Footer.tsx** — Add /about link under Intelligence section. Add GitHub link. Keep exact independence disclosure text.
-
-### 7. General Polish
-- Add "Last updated: April 12, 2026" to Matrix page header area.
-- Ensure orange accents on CRITICAL/HIGH severity badges (already in place via `severityColors` in IntelligenceFeed).
-
-### Files Changed
+### Files changed
 | File | Action |
 |------|--------|
-| `supabase/functions/check-subscription/index.ts` | Fix import |
-| `src/components/home/MatrixTeaser.tsx` | Update stats |
-| `src/components/home/HeroSection.tsx` | Update trust line |
-| `src/components/home/SocialProof.tsx` | New component |
-| `src/pages/Index.tsx` | Add SocialProof |
-| `src/pages/About.tsx` | New page |
-| `src/pages/Matrix.tsx` | Add note + timestamp |
-| `src/App.tsx` | Add /about route |
-| `src/components/layout/Navbar.tsx` | Add About link |
-| `src/components/layout/Footer.tsx` | Add About + GitHub links |
-| Migration | 3 new tables with RLS |
+| `.env.example` | Full rewrite |
+| `README.md` | Full rewrite |
+| `src/main.tsx` | Add runtime env check |
 
