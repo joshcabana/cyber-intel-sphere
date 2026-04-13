@@ -24,8 +24,9 @@ export default function Footer() {
             <div className="flex flex-col gap-2">
               <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Research</Link>
               <Link to="/matrix" className="text-sm text-muted-foreground hover:text-primary transition-colors">Stack Matrix</Link>
+              <Link to="/tools" className="text-sm text-muted-foreground hover:text-primary transition-colors">Tools</Link>
               <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link>
-              
+              <Link to="/methodology" className="text-sm text-muted-foreground hover:text-primary transition-colors">Methodology</Link>
             </div>
           </div>
 
@@ -41,9 +42,10 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Legal</h4>
             <div className="flex flex-col gap-2">
-              <span className="text-sm text-muted-foreground">Privacy Policy</span>
-              <span className="text-sm text-muted-foreground">Terms of Service</span>
-              <span className="text-sm text-muted-foreground">Independence Policy</span>
+              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
+              <Link to="/ai-use" className="text-sm text-muted-foreground hover:text-primary transition-colors">AI Use Policy</Link>
+              <Link to="/corrections" className="text-sm text-muted-foreground hover:text-primary transition-colors">Corrections</Link>
             </div>
           </div>
         </div>
