@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
@@ -92,6 +93,11 @@ export default function Matrix() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="AI Security Stack Matrix"
+        description="The most comprehensive AI security tool database. Searchable, filterable, and independently analyzed. No pay-for-play rankings."
+        path="/matrix"
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4">

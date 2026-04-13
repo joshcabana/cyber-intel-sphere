@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,11 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="Pricing"
+        description="One prevented incident pays for years of Pro access. Choose your AI security intelligence level."
+        path="/pricing"
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4">

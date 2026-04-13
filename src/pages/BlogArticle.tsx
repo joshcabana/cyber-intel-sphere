@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
@@ -151,6 +152,14 @@ export default function BlogArticle() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={article.title}
+        description={article.excerpt}
+        path={`/blog/${article.slug}`}
+        type="article"
+        publishedTime={new Date(article.date).toISOString()}
+        author={article.author}
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-6xl">
