@@ -5,6 +5,11 @@ const corsHeaders = {
 import Stripe from 'https://esm.sh/stripe@18.5.0?target=deno'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 
+const VALID_PRICES = new Set([
+  'price_1TLiOCC1O032lUHcBIWVdoNn', // Pro Monthly $39
+  'price_1TLiOfC1O032lUHcsWxc2nkY', // Pro Annual $390
+])
+
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2025-08-27.basil' })
 
 Deno.serve(async (req) => {
@@ -31,12 +36,12 @@ Deno.serve(async (req) => {
     }
     const userId = userData.user.id
 
-    const { priceType } = await req.json()
-    if (!priceType || !['pro_monthly', 'pro_yearly'].includes(priceType)) {
-      return new Response(JSON.stringify({ error: 'Invalid price type' }), { status: 400, headers: corsHeaders })
+    const { priceId } = await req.json()
+    if (!priceId || !VALID_PRICES.has(priceId)) {
+      return new Response(JSON.stringify({ error: 'Invalid price ID' }), { status: 400, headers: corsHeaders })
     }
 
-    // Get or create profile
+    // Get or create Stripe customer
     const adminClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -61,29 +66,12 @@ Deno.serve(async (req) => {
         .eq('user_id', userId)
     }
 
-    const priceConfig: Record<string, { amount: number; interval: string }> = {
-      pro_monthly: { amount: 3900, interval: 'month' },
-      pro_yearly: { amount: 39000, interval: 'year' },
-    }
-    const config = priceConfig[priceType]
-
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          unit_amount: config.amount,
-          recurring: { interval: config.interval as 'month' | 'year' },
-          product_data: {
-            name: `AI Threat Brief Pro (${priceType === 'pro_monthly' ? 'Monthly' : 'Annual'})`,
-            description: 'Full intelligence access for security professionals',
-          },
-        },
-        quantity: 1,
-      }],
+      line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
-        metadata: { userId, priceType },
+        metadata: { userId },
       },
       success_url: `${req.headers.get('origin')}/dashboard?checkout=success`,
       cancel_url: `${req.headers.get('origin')}/pricing?checkout=cancelled`,

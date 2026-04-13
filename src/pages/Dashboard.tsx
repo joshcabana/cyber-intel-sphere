@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Flame, Copy, Users, Bookmark, Shield, ArrowRight,
-  TrendingUp, Clock, CheckCircle2
+  TrendingUp, Clock, CheckCircle2, Settings
 } from "lucide-react";
 import { toast } from "sonner";
 import { getAllArticles } from "@/lib/articles";
@@ -17,21 +17,20 @@ import { getAllArticles } from "@/lib/articles";
 export default function Dashboard() {
   const { profile, isPro, refreshProfile } = useAuth();
   const [referralCount, setReferralCount] = useState(0);
-  const [savedBriefs, setSavedBriefs] = useState<{ title: string; saved_at: string }[]>([]);
+  const [savedBriefs, setSavedBriefs] = useState<{ title: string; saved_at: string; slug: string | null }[]>([]);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
-    // Fetch referral count
     supabase
       .from("referrals")
       .select("id", { count: "exact" })
       .eq("referrer_id", profile.user_id)
       .then(({ count }) => setReferralCount(count || 0));
 
-    // Fetch saved briefs
     supabase
       .from("saved_briefs")
-      .select("title, saved_at")
+      .select("title, saved_at, slug")
       .eq("user_id", profile.user_id)
       .order("saved_at", { ascending: false })
       .limit(5)
@@ -43,6 +42,18 @@ export default function Dashboard() {
       navigator.clipboard.writeText(`${window.location.origin}/r/${profile.referral_code}`);
       toast.success("Referral link copied!");
     }
+  };
+
+  const openPortal = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to open subscription manager");
+    }
+    setPortalLoading(false);
   };
 
   const streakCount = profile?.streak_count ?? 0;
@@ -60,11 +71,19 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-foreground">Command Center</h1>
               <p className="text-sm text-muted-foreground">Your personalized intelligence dashboard</p>
             </div>
-            {isPro && (
-              <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
-                <Shield className="h-3.5 w-3.5 mr-1" /> PRO
-              </Badge>
-            )}
+            <div className="flex items-center gap-3">
+              {isPro && (
+                <>
+                  <Button variant="outline" size="sm" onClick={openPortal} disabled={portalLoading}>
+                    <Settings className="h-3.5 w-3.5 mr-1.5" />
+                    {portalLoading ? "Loading..." : "Manage Subscription"}
+                  </Button>
+                  <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+                    <Shield className="h-3.5 w-3.5 mr-1" /> PRO
+                  </Badge>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Widget grid */}
@@ -149,15 +168,17 @@ export default function Dashboard() {
                 <Bookmark className="h-4 w-4 text-primary" /> Saved
               </h2>
               {savedBriefs.length > 0 ? savedBriefs.map((brief, i) => (
-                <div key={i} className="glass-panel rounded-lg p-4 cyber-border">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary/60 shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{brief.title}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(brief.saved_at).toLocaleDateString()}</p>
+                <Link key={i} to={brief.slug ? `/blog/${brief.slug}` : "#"} className="block">
+                  <div className="glass-panel rounded-lg p-4 cyber-border hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary/60 shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{brief.title}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(brief.saved_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               )) : (
                 <div className="glass-panel rounded-lg p-4 cyber-border text-center">
                   <p className="text-sm text-muted-foreground">No saved briefs yet</p>

@@ -41,26 +41,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkSubscription = async () => {
+  const syncAndFetchProfile = async (userId: string) => {
     try {
-      const { data } = await supabase.functions.invoke("check-subscription");
-      if (data?.subscription_tier) {
-        // Profile will be refreshed after sync
+      // Call check-subscription and use its response directly
+      const { data: subData } = await supabase.functions.invoke("check-subscription");
+      // Now fetch the profile which has been updated by the edge function
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+      if (data) {
+        // Overlay subscription data from the edge function response if available
+        if (subData?.subscription_tier) {
+          data.subscription_tier = subData.subscription_tier;
+          data.subscription_status = subData.subscription_status;
+        }
+        setProfile(data);
+        await updateStreak(data);
       }
     } catch (e) {
-      console.error("Subscription check failed:", e);
-    }
-  };
-
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-    if (data) {
-      setProfile(data);
-      await updateStreak(data);
+      console.error("Profile sync failed:", e);
+      // Fallback: just fetch profile without subscription sync
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+      if (data) {
+        setProfile(data);
+      }
     }
   };
 
@@ -82,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) await syncAndFetchProfile(user.id);
   };
 
   useEffect(() => {
@@ -90,9 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-      if (session?.user) {
-          // Check subscription from Stripe, then fetch profile
-          checkSubscription().then(() => fetchProfile(session.user.id));
+        if (session?.user) {
+          syncAndFetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
@@ -104,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkSubscription().then(() => fetchProfile(session.user.id));
+        syncAndFetchProfile(session.user.id);
       }
       setLoading(false);
     });
