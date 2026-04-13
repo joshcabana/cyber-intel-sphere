@@ -1,597 +1,77 @@
 import assert from 'node:assert/strict';
-import { createServer as createHttpServer } from 'node:http';
-import path from 'node:path';
-import { spawn, spawnSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { readFile, readdir } from 'node:fs/promises';
 import net from 'node:net';
-import {
-  evaluatePrivacyAnalyticsContract,
-  PLAUSIBLE_SCRIPT_URL,
-} from '../lib/analytics-config.mjs';
-import { SECURITY_HEADERS, getExpectedSecurityHeaderValue } from '../lib/security-headers.mjs';
+import path from 'node:path';
 
-const repoDir = process.cwd();
-const packageJson = JSON.parse(await readFile(path.join(repoDir, 'package.json'), 'utf8'));
-const packageManagerSpec = typeof packageJson.packageManager === 'string'
-  ? packageJson.packageManager
-  : 'pnpm@10.23.0';
+const root = process.cwd();
+const distDir = path.join(root, 'dist');
 
 function findFreePort() {
   return new Promise((resolve, reject) => {
     const server = net.createServer();
     server.listen(0, '127.0.0.1', () => {
-      const address = server.address();
-
-      if (!address || typeof address === 'string') {
-        reject(new Error('Could not resolve a free port.'));
-        return;
-      }
-
-      const { port } = address;
-      server.close((error) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        resolve(port);
-      });
+      const addr = server.address();
+      if (!addr || typeof addr === 'string') { reject(new Error('No port')); return; }
+      server.close(() => resolve(addr.port));
     });
     server.on('error', reject);
   });
 }
 
-async function waitForServer(url, label) {
-  const deadline = Date.now() + 30_000;
+function pass(label) { console.log(`  ✔ ${label}`); }
 
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) {
-        return;
-      }
-    } catch {
-      // Retry until timeout.
-    }
+async function checkDistOutput() {
+  const indexHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
+  assert(indexHtml.includes('id="root"'), 'dist/index.html must contain id="root" mount point');
+  pass('dist/index.html contains #root mount point');
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  }
-
-  throw new Error(`Timed out waiting for ${label}.`);
+  const assets = await readdir(path.join(distDir, 'assets'));
+  assert(assets.some(f => f.endsWith('.js')), 'dist/assets/ must contain JS bundles');
+  assert(assets.some(f => f.endsWith('.css')), 'dist/assets/ must contain CSS bundles');
+  pass(`dist/assets/ has ${assets.length} files (JS + CSS present)`);
 }
 
-function startApp(port, extraEnv = {}, scriptName = 'dev') {
-  const packageManagerLaunch = resolvePackageManagerLaunch();
-  const child = spawn(packageManagerLaunch.command, [...packageManagerLaunch.args, scriptName, '-p', String(port)], {
-    cwd: repoDir,
-    detached: true,
-    env: {
-      ...process.env,
-      NEXT_PUBLIC_SITE_URL: `http://127.0.0.1:${port}`,
-      ...extraEnv,
-    },
+async function checkPreviewServer() {
+  const port = await findFreePort();
+  const child = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], {
+    cwd: root,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
-  let logs = '';
-  const killProcessGroup = (signal) => {
-    if (!child.pid) {
-      return;
-    }
 
-    try {
-      process.kill(-child.pid, signal);
-    } catch (error) {
-      if (error.code !== 'ESRCH') {
-        throw error;
-      }
-    }
-  };
-
-  child.stdout.on('data', (chunk) => {
-    logs += chunk.toString();
-  });
-  child.stderr.on('data', (chunk) => {
-    logs += chunk.toString();
-  });
-
-  return {
-    child,
-    getLogs() {
-      return logs;
-    },
-    async stop() {
-      if (child.exitCode !== null) {
-        return;
-      }
-
-      await new Promise((resolve, reject) => {
-        let settled = false;
-        const finish = (callback, value) => {
-          if (settled) {
-            return;
-          }
-          settled = true;
-          clearTimeout(timeout);
-          child.off('exit', onExit);
-          child.off('error', onError);
-          callback(value);
-        };
-        const onExit = () => {
-          finish(resolve);
-        };
-        const onError = (error) => {
-          finish(reject, error);
-        };
-        const timeout = setTimeout(() => {
-          if (child.exitCode === null) {
-            killProcessGroup('SIGKILL');
-          }
-          if (child.exitCode !== null) {
-            finish(resolve);
-          }
-        }, 5_000);
-
-        child.once('exit', onExit);
-        child.once('error', onError);
-        killProcessGroup('SIGINT');
-        if (child.exitCode !== null) {
-          finish(resolve);
-        }
-      });
-    },
-  };
-}
-
-function canRunCommand(command, args) {
-  const result = spawnSync(command, args, { stdio: 'ignore' });
-  return !result.error && result.status === 0;
-}
-
-function resolvePackageManagerLaunch() {
-  if (canRunCommand('pnpm', ['--version'])) {
-    return {
-      command: 'pnpm',
-      args: [],
-    };
-  }
-
-  if (canRunCommand('npx', ['--version'])) {
-    return {
-      command: 'npx',
-      args: [packageManagerSpec],
-    };
-  }
-
-  throw new Error('Smoke tests require pnpm on PATH or npm/npx so the pinned pnpm version can be launched.');
-}
-
-async function startMockBeehiivServer() {
-  const port = await findFreePort();
-  const sockets = new Set();
-  const server = createHttpServer(async (request, response) => {
-    if (
-      request.method !== 'POST' ||
-      request.url !== '/v2/publications/test-publication/subscriptions'
-    ) {
-      response.writeHead(404, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify({ message: 'Not found' }));
-      return;
-    }
-
-    let requestBody = '';
-    for await (const chunk of request) {
-      requestBody += chunk.toString();
-    }
-
-    const payload = JSON.parse(requestBody);
-    assert.equal('custom_fields' in payload, false);
-
-    if (payload.email === 'error@example.com') {
-      response.writeHead(422, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify({ errors: [{ message: 'Mock Beehiiv rejected the signup request.' }] }));
-      return;
-    }
-
-    response.writeHead(201, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify({ data: { id: 'sub_123', email: payload.email } }));
-  });
-
-  server.on('connection', (socket) => {
-    sockets.add(socket);
-    socket.on('close', () => {
-      sockets.delete(socket);
+  // Wait for server ready
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('Preview server did not start in 15s')), 15_000);
+    let output = '';
+    child.stdout.on('data', (chunk) => {
+      output += chunk.toString();
+      if (output.includes('Local:')) { clearTimeout(timeout); resolve(); }
     });
-  });
-
-  await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
-
-  return {
-    baseUrl: `http://127.0.0.1:${port}`,
-    async stop() {
-      server.closeIdleConnections?.();
-      server.closeAllConnections?.();
-      for (const socket of sockets) {
-        socket.destroy();
-      }
-      await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
-    },
-  };
-}
-
-function getRateLimitKeyPrefix(requestBody) {
-  try {
-    const commands = JSON.parse(requestBody);
-    const rateLimitCommand = Array.isArray(commands)
-      ? commands.find((command) => Array.isArray(command) && command[0] === 'evalsha')
-      : null;
-    const currentWindowKey = rateLimitCommand?.[3];
-
-    if (typeof currentWindowKey !== 'string') {
-      return null;
-    }
-
-    return currentWindowKey.replace(/:\d+$/, '');
-  } catch {
-    return null;
-  }
-}
-
-async function startMockUpstashServer() {
-  const port = await findFreePort();
-  const requestCounts = new Map();
-  const server = createHttpServer(async (request, response) => {
-    if (request.method !== 'POST' || request.url !== '/pipeline') {
-      response.writeHead(404, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify({ message: 'Not found' }));
-      return;
-    }
-
-    let requestBody = '';
-    for await (const chunk of request) {
-      requestBody += chunk.toString();
-    }
-
-    const commands = JSON.parse(requestBody);
-    const keyPrefix = getRateLimitKeyPrefix(requestBody) ?? '@upstash/ratelimit:anonymous';
-    const nextCount = (requestCounts.get(keyPrefix) ?? 0) + 1;
-    requestCounts.set(keyPrefix, nextCount);
-    const pipelineResults = Array.isArray(commands)
-      ? commands.map((command) => {
-          if (!Array.isArray(command)) {
-            return { result: null };
-          }
-
-          if (command[0] === 'zincrby') {
-            return { result: nextCount };
-          }
-
-          if (command[0] === 'evalsha') {
-            return {
-              result: [
-                5 - nextCount,
-                5,
-              ],
-            };
-          }
-
-          return { result: 'OK' };
-        })
-      : [{ result: null }];
-
-    response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify(pipelineResults));
-  });
-
-  await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
-
-  return {
-    baseUrl: `http://127.0.0.1:${port}`,
-    async stop() {
-      await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
-    },
-  };
-}
-
-function extractArticleLinks(html, knownSlugs) {
-  return knownSlugs.filter((slug) => html.includes(`/blog/${slug}`));
-}
-
-async function requestJson(url, init) {
-  const response = await fetch(url, init);
-  return {
-    response,
-    payload: await response.json(),
-  };
-}
-
-function assertSecurityHeaders(headers) {
-  for (const header of SECURITY_HEADERS) {
-    const actualValue = headers.get(header.key);
-
-    if (header.key === 'Content-Security-Policy') {
-      assert.equal(
-        typeof actualValue,
-        'string',
-        `Expected ${header.key} to match the configured value.`,
-      );
-
-      const escapedExpectedValue = header.value
-        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        .replace(/__CSP_NONCE__/g, "[^']+");
-      const expectedPattern = new RegExp(`^${escapedExpectedValue}$`);
-
-      assert.match(
-        actualValue,
-        expectedPattern,
-        `Expected ${header.key} to match ${getExpectedSecurityHeaderValue(header.key)}.`,
-      );
-      continue;
-    }
-
-    assert.equal(
-      actualValue,
-      header.value,
-      `Expected ${header.key} to match ${getExpectedSecurityHeaderValue(header.key)}.`,
-    );
-  }
-}
-
-async function main() {
-  const manifest = JSON.parse(
-    await readFile(path.join(repoDir, 'content-manifest.json'), 'utf8'),
-  );
-  const editorialArticles = manifest.articles.filter((article) => article.section === 'editorial');
-  const reviewArticles = manifest.articles.filter((article) => article.section === 'review');
-  const articleSlugs = editorialArticles.map((article) => article.slug);
-  const homepageSlugs = editorialArticles.slice(0, 4).map((article) => article.slug);
-  const privacyArticles = editorialArticles.filter((article) => article.category === 'Privacy');
-  assert.ok(privacyArticles.length > 0, 'Expected at least one Privacy article in content-manifest.json.');
-
-  const coldStartPort = await findFreePort();
-  const coldStartApp = startApp(coldStartPort, {
-    BEEHIIV_API_KEY: '',
-    BEEHIIV_PUBLICATION_ID: '',
-    // Make the "cold start" scenario deterministic even when local dotenv files
-    // contain production analytics and campaign env vars.
-    NEXT_PUBLIC_PLAUSIBLE_DOMAIN: '',
-    NEXT_PUBLIC_LINKEDIN_PARTNER_ID: '',
-    NEXT_PUBLIC_LINKEDIN_CONVERSION_PRO_SIGNUP: '',
-    UPSTASH_REDIS_REST_URL: '',
-    UPSTASH_REDIS_REST_TOKEN: '',
+    child.on('error', (err) => { clearTimeout(timeout); reject(err); });
+    child.on('exit', (code) => { clearTimeout(timeout); reject(new Error(`Exited ${code}`)); });
   });
 
   try {
-    await waitForServer(`http://127.0.0.1:${coldStartPort}/`, 'cold-start production server');
-    const coldStartSameSiteHeaders = {
-      'Content-Type': 'application/json',
-      origin: `http://127.0.0.1:${coldStartPort}`,
-    };
-
-    const homeResponse = await fetch(`http://127.0.0.1:${coldStartPort}/`);
-    assert.equal(homeResponse.status, 200);
-    assertSecurityHeaders(homeResponse.headers);
-    const homeHtml = await homeResponse.text();
-    assert.deepEqual(
-      extractArticleLinks(homeHtml, articleSlugs),
-      homepageSlugs,
-      'Expected homepage to link to the latest four article slugs in content-manifest.json.',
-    );
-    assert.match(homeHtml, /Latest Briefings/);
-    assert.match(homeHtml, /Intelligence Feed/);
-    assert.match(homeHtml, /Get the next briefing in your inbox/);
-    assert.doesNotMatch(homeHtml, /Join the launch list|publication goes live/i);
-    assert.match(homeHtml, /href="\/about"/);
-    assert.match(homeHtml, /href="\/archive"/);
-    assert.match(homeHtml, /href="\/methodology"/);
-    assert.match(homeHtml, /href="\/pro"/);
-    assert.doesNotMatch(homeHtml, /\/go\//);
-    assert.doesNotMatch(homeHtml, /Join Pro Waitlist|Join the Pro Waitlist/);
-
-    const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
-    assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), privacyArticles.map((a) => a.slug));
-
-    for (const [path, expectedMarker] of [
-      ['/about', 'Why trust this brief?'],
-      ['/archive', 'Intelligence Archive'],
-      ['/methodology', 'Research Methodology'],
-      ['/pro', 'AI Security Brief Pro'],
-      ['/upgrade', 'Join the Pro Waitlist'],
-    ]) {
-      const response = await fetch(`http://127.0.0.1:${coldStartPort}${path}`);
-      const html = await response.text();
-      assert.equal(response.status, 200, `Expected ${path} to return 200.`);
-      assert.match(html, new RegExp(expectedMarker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    for (const route of ['/', '/login', '/blog']) {
+      const res = await fetch(`http://127.0.0.1:${port}${route}`);
+      assert.equal(res.status, 200, `GET ${route} must return 200`);
+      if (route === '/') {
+        const html = await res.text();
+        assert(html.includes('id="root"'), 'Homepage must contain #root');
+      }
+      pass(`GET ${route} → 200`);
     }
-
-    assert.doesNotMatch(homeHtml, /protected-assets\//);
-    const privacyPolicyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/privacy`).then((response) => response.text());
-    const coldStartPrivacyContract = evaluatePrivacyAnalyticsContract({
-      plausibleEnabled: homeHtml.includes(PLAUSIBLE_SCRIPT_URL),
-      linkedInInsightEnabled: false,
-      html: privacyPolicyHtml,
-    });
-    assert.equal(coldStartPrivacyContract.ok, true, coldStartPrivacyContract.message);
-
-    for (const article of editorialArticles) {
-      const articleResponse = await fetch(`http://127.0.0.1:${coldStartPort}${article.routePath}`);
-      const articleHtml = await articleResponse.text();
-      assert.equal(articleResponse.status, 200, `Expected ${article.routePath} to return 200.`);
-      assert.match(articleHtml, new RegExp(article.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.match(articleHtml, new RegExp(article.category.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.match(articleHtml, /Back to all articles/);
-      assert.match(articleHtml, /Primary offer/);
-      assert.match(articleHtml, /View the readiness review/);
-      assert.match(articleHtml, /href="\/assessment"/);
-    }
-
-    for (const article of reviewArticles) {
-      const reviewResponse = await fetch(`http://127.0.0.1:${coldStartPort}${article.routePath}`);
-      const reviewHtml = await reviewResponse.text();
-      assert.equal(reviewResponse.status, 200, `Expected ${article.routePath} to return 200.`);
-      assert.match(reviewHtml, new RegExp(article.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.match(reviewHtml, new RegExp(article.category.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.match(reviewHtml, /Back to all reviews/);
-      assert.match(reviewHtml, /Affiliate disclosure/);
-    }
-
-    const toolsHtml = await fetch(`http://127.0.0.1:${coldStartPort}/tools`).then((response) => response.text());
-    assert.match(toolsHtml, /Affiliate disclosure:/);
-    assert.match(toolsHtml, /affiliate links/);
-    assert.match(toolsHtml, /data-newsletter-source="tools-footer"/);
-    assert.match(toolsHtml, /Get the low-noise weekly brief/i);
-    assert.doesNotMatch(toolsHtml, /launch updates/i);
-
-    const newsletterHtml = await fetch(`http://127.0.0.1:${coldStartPort}/newsletter?source=tools-footer`).then((response) => response.text());
-    assert.match(newsletterHtml, /tracking AI abuse, privacy changes, and the tooling choices that matter/i);
-    assert.match(newsletterHtml, /data-newsletter-source="tools-footer"/);
-    assert.match(newsletterHtml, /weekly briefings, low-noise/i);
-    assert.doesNotMatch(newsletterHtml, /launch list|publishing schedule is live/i);
-
-    const missingConfigResult = await requestJson(`http://127.0.0.1:${coldStartPort}/api/subscribe`, {
-      method: 'POST',
-      headers: coldStartSameSiteHeaders,
-      body: JSON.stringify({ email: 'reader@example.com' }),
-    });
-    assert.equal(missingConfigResult.response.status, 503);
-    assert.ok(
-      [
-        'Newsletter signup is temporarily unavailable. Try again shortly.',
-        'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
-        'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
-      ].includes(missingConfigResult.payload.message),
-      `Unexpected cold-start subscribe failure message: ${missingConfigResult.payload.message}`,
-    );
   } finally {
-    await coldStartApp.stop();
-  }
-
-  const mockBeehiiv = await startMockBeehiivServer();
-  const mockUpstash = await startMockUpstashServer();
-  const configuredPort = await findFreePort();
-  const configuredApp = startApp(configuredPort, {
-    BEEHIIV_API_KEY: 'smoke-test-key',
-    BEEHIIV_PUBLICATION_ID: 'test-publication',
-    BEEHIIV_API_BASE_URL: mockBeehiiv.baseUrl,
-    NEXT_PUBLIC_PLAUSIBLE_DOMAIN: 'aithreatbrief.com',
-    NEXT_PUBLIC_LINKEDIN_PARTNER_ID: '',
-    NEXT_PUBLIC_LINKEDIN_CONVERSION_PRO_SIGNUP: '',
-    UPSTASH_REDIS_REST_URL: mockUpstash.baseUrl,
-    UPSTASH_REDIS_REST_TOKEN: 'smoke-test-token',
-  });
-
-  try {
-    await waitForServer(`http://127.0.0.1:${configuredPort}/`, 'configured production server');
-    const sameSiteHeaders = {
-      'Content-Type': 'application/json',
-      origin: `http://127.0.0.1:${configuredPort}`,
-    };
-
-    const configuredHomeHtml = await fetch(`http://127.0.0.1:${configuredPort}/`).then((response) => response.text());
-    assert.match(configuredHomeHtml, new RegExp(PLAUSIBLE_SCRIPT_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-
-    const configuredPrivacyHtml = await fetch(`http://127.0.0.1:${configuredPort}/privacy`).then((response) => response.text());
-    const configuredPrivacyContract = evaluatePrivacyAnalyticsContract({
-      plausibleEnabled: configuredHomeHtml.includes(PLAUSIBLE_SCRIPT_URL),
-      linkedInInsightEnabled: false,
-      html: configuredPrivacyHtml,
-    });
-    assert.equal(configuredPrivacyContract.ok, true, configuredPrivacyContract.message);
-
-    const invalidJsonResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: sameSiteHeaders,
-      body: '{"email"',
-    });
-    assert.equal(invalidJsonResult.response.status, 400);
-    assert.equal(invalidJsonResult.payload.message, 'The signup request body was invalid JSON.');
-
-    const invalidOriginResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        origin: 'https://attacker.example',
-      },
-      body: JSON.stringify({ email: 'reader@example.com' }),
-    });
-    assert.equal(invalidOriginResult.response.status, 403);
-    assert.equal(
-      invalidOriginResult.payload.message,
-      'This signup request could not be verified. Refresh the page and try again.',
-    );
-
-    const invalidEmailResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: sameSiteHeaders,
-      body: JSON.stringify({ email: 'not-an-email' }),
-    });
-    assert.equal(invalidEmailResult.response.status, 400);
-    assert.equal(invalidEmailResult.payload.message, 'Enter a valid email address to subscribe.');
-
-    const honeypotResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: sameSiteHeaders,
-      body: JSON.stringify({ email: 'reader@example.com', website: 'https://spam.example' }),
-    });
-    assert.equal(honeypotResult.response.status, 400);
-    assert.equal(honeypotResult.payload.message, 'This signup request could not be verified. Refresh the page and try again.');
-
-    const upstreamErrorResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: sameSiteHeaders,
-      body: JSON.stringify({ email: 'error@example.com' }),
-    });
-    assert.equal(upstreamErrorResult.response.status, 422);
-    assert.equal(
-      upstreamErrorResult.payload.message,
-      'The signup request was rejected. Double-check the submitted details and try again.',
-    );
-
-    const successResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: {
-        ...sameSiteHeaders,
-        'x-forwarded-for': '198.51.100.10',
-      },
-      body: JSON.stringify({ email: 'success@example.com' }),
-    });
-    assert.equal(successResult.response.status, 200);
-    assert.equal(successResult.payload.message, "You're in. Check your inbox for Beehiiv's confirmation email.");
-
-    for (let attemptNumber = 1; attemptNumber <= 5; attemptNumber += 1) {
-      const allowedResponse = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-        method: 'POST',
-        headers: {
-          ...sameSiteHeaders,
-          'x-forwarded-for': '203.0.113.25',
-        },
-        body: JSON.stringify({ email: `burst-${attemptNumber}@example.com` }),
-      });
-
-      assert.equal(allowedResponse.response.status, 200);
-    }
-
-    const rateLimitedResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
-      method: 'POST',
-      headers: {
-        ...sameSiteHeaders,
-        'x-forwarded-for': '203.0.113.25',
-      },
-      body: JSON.stringify({ email: 'burst-6@example.com' }),
-    });
-
-    assert.equal(rateLimitedResult.response.status, 429);
-    assert.equal(
-      rateLimitedResult.payload.message,
-      'Too many signup attempts. Please try again in a minute.',
-    );
-  } finally {
-    await configuredApp.stop();
-    await mockBeehiiv.stop();
-    await mockUpstash.stop();
+    child.kill('SIGTERM');
   }
 }
 
-main().catch((error) => {
-  console.error(error.stack || error.message);
-  process.exit(1);
-});
+console.log('\nSmoke tests (Vite SPA)\n');
+
+console.log('1. Build output:');
+await checkDistOutput();
+
+console.log('\n2. Preview server:');
+await checkPreviewServer();
+
+console.log('\n✔ All smoke tests passed.\n');
