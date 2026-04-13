@@ -15,6 +15,13 @@ import BlogArticle from "./pages/BlogArticle";
 import Pro from "./pages/Pro";
 import About from "./pages/About";
 import Referral from "./pages/Referral";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import AIUse from "./pages/AIUse";
+import Corrections from "./pages/Corrections";
+import Methodology from "./pages/Methodology";
+import Tools from "./pages/Tools";
+import Assessment from "./pages/Assessment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +44,13 @@ const App = () => (
             <Route path="/pro" element={<ProtectedRoute><Pro /></ProtectedRoute>} />
             <Route path="/about" element={<About />} />
             <Route path="/r/:code" element={<Referral />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/ai-use" element={<AIUse />} />
+            <Route path="/corrections" element={<Corrections />} />
+            <Route path="/methodology" element={<Methodology />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/assessment" element={<Assessment />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
