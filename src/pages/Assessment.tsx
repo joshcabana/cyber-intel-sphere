@@ -43,7 +43,7 @@ const processSteps = [
   "Review delivered within 7 business days, then covered in a 60-minute readout.",
 ];
 
-const contactEmail = "hello@aisecuritybrief.com";
+const contactEmail = "hello@aithreatbrief.com";
 
 export default function Assessment() {
   const contactHref = `mailto:${contactEmail}?subject=${encodeURIComponent("AI Agent Security Readiness Review")}`;

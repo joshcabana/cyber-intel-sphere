@@ -24,6 +24,14 @@ const staticPaths = [
   "/about",
   "/pro",
   "/login",
+  "/tools",
+  "/newsletter",
+  "/assessment",
+  "/privacy",
+  "/terms",
+  "/ai-use",
+  "/corrections",
+  "/methodology",
 ];
 
 // Extract slugs from imported-articles.ts

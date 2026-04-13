@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -180,14 +181,14 @@ export default function Newsletter() {
           </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {recentArticles.map((a) => (
-              <a
+              <Link
                 key={a.slug}
-                href={`/blog/${a.slug}`}
+                to={`/blog/${a.slug}`}
                 className="glass-panel rounded-xl p-5 cyber-border hover:border-primary/40 transition-colors"
               >
                 <div className="text-xs text-muted-foreground font-mono mb-2">{a.category}</div>
                 <h3 className="font-semibold text-foreground text-sm leading-snug">{a.title}</h3>
-              </a>
+              </Link>
             ))}
           </div>
         </section>

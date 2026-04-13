@@ -32,7 +32,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
           <a
             href={tool.url}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer sponsored"
             className="text-xs text-primary hover:underline flex items-center gap-1"
           >
             Visit <ExternalLink className="h-3 w-3" />
