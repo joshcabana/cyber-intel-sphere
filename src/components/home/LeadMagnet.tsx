@@ -1,15 +1,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileText, ArrowRight, CheckCircle2 } from "lucide-react";
+import { FileText, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function LeadMagnet() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (!email || loading) return;
+    setLoading(true);
+    const { error } = await supabase.from("leads").insert({ email, source: "checklist" } as any);
+    setLoading(false);
+    if (error) {
+      toast.error("Something went wrong — please try again.");
+      return;
+    }
+    setSubmitted(true);
+    toast.success("Check your inbox!");
   };
 
   return (
@@ -42,9 +54,8 @@ export default function LeadMagnet() {
                 className="bg-secondary border-border/50 h-11 text-foreground placeholder:text-muted-foreground"
                 required
               />
-              <Button variant="hero" type="submit" className="h-11 px-6 shrink-0">
-                Get the PDF
-                <ArrowRight className="h-4 w-4" />
+              <Button variant="hero" type="submit" className="h-11 px-6 shrink-0" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Get the PDF <ArrowRight className="h-4 w-4" /></>}
               </Button>
             </form>
           )}
