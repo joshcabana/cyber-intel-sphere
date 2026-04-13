@@ -49,6 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead title="Dashboard" description="Your AI Threat Brief intelligence dashboard — streaks, saved briefings, referrals, and subscription status." path="/dashboard" />
       <Navbar />
       <main className="flex-1 pt-20 pb-12">
         <div className="container mx-auto px-4">
