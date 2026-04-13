@@ -1,3 +1,4 @@
+import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Shield } from "lucide-react";
@@ -15,6 +16,11 @@ const philosophyRules = [
 export default function About() {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="About AI Threat Brief"
+        description="Independent AI security intelligence platform. Human-reviewed, primary-source grounded. No vendor sponsorship."
+        path="/about"
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-3xl">
