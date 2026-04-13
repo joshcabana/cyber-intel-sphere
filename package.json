@@ -10,7 +10,12 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:smoke": "node scripts/smoke-test.mjs",
+    "verify:status-doc": "node scripts/verify-status-doc.mjs",
+    "check:content": "node scripts/content-manifest.mjs --check"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
