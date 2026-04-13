@@ -1,11 +1,11 @@
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
-import Stripe from 'https://esm.sh/stripe@17.7.0?target=deno'
+import Stripe from 'https://esm.sh/stripe@18.5.0?target=deno'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2025-04-30.basil' })
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2025-08-27.basil' })
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -25,11 +25,11 @@ Deno.serve(async (req) => {
     )
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token)
-    if (claimsError || !claimsData?.claims) {
+    const { data: userData, error: userError } = await supabase.auth.getUser(token)
+    if (userError || !userData?.user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
     }
-    const userId = claimsData.claims.sub
+    const userId = userData.user.id
 
     const { priceType } = await req.json()
     if (!priceType || !['pro_monthly', 'pro_yearly'].includes(priceType)) {
@@ -61,7 +61,6 @@ Deno.serve(async (req) => {
         .eq('user_id', userId)
     }
 
-    // Create price lookup - these would be real Stripe price IDs in production
     const priceConfig: Record<string, { amount: number; interval: string }> = {
       pro_monthly: { amount: 3900, interval: 'month' },
       pro_yearly: { amount: 39000, interval: 'year' },

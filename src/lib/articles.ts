@@ -33,7 +33,7 @@ export type Article = {
 
 export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const READ_TIME_PATTERN = /^\d+\s+min$/;
-export const BRAND_AUTHOR_NAME = "AI Security Brief";
+export const BRAND_AUTHOR_NAME = "AI Threat Brief";
 export const CONTENT_SECTION_VALUES = ["editorial", "review"] as const;
 export const MONETIZATION_VALUES = ["none", "affiliate"] as const;
 export const PENDING_HUMAN_REVIEW = "PENDING_HUMAN_REVIEW";
