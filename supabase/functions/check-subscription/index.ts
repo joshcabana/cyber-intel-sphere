@@ -6,6 +6,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const PRODUCT_TIER_MAP: Record<string, string> = {
+  "prod_UKN8tN6bbKc7hx": "pro_monthly",
+  "prod_UKN8jH04XHv2uV": "pro_yearly",
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
@@ -39,7 +44,6 @@ Deno.serve(async (req) => {
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
 
     if (customers.data.length === 0) {
@@ -51,7 +55,6 @@ Deno.serve(async (req) => {
 
       return new Response(JSON.stringify({ subscribed: false, subscription_tier: "free", subscription_status: "inactive" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
       });
     }
 
@@ -73,15 +76,14 @@ Deno.serve(async (req) => {
 
       return new Response(JSON.stringify({ subscribed: false, subscription_tier: "free", subscription_status: "inactive" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
       });
     }
 
     const subscription = subscriptions.data[0];
-    const interval = subscription.items.data[0]?.price?.recurring?.interval;
-    const tier = interval === "year" ? "pro_yearly" : "pro_monthly";
+    const productId = String(subscription.items.data[0]?.price?.product ?? "");
+    const tier = PRODUCT_TIER_MAP[productId] || "pro_monthly";
     const subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-    logStep("Active subscription found", { tier, subscriptionEnd });
+    logStep("Active subscription found", { tier, productId, subscriptionEnd });
 
     await supabaseClient
       .from("profiles")
@@ -99,7 +101,6 @@ Deno.serve(async (req) => {
       subscription_end: subscriptionEnd,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

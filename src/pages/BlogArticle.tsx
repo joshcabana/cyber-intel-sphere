@@ -6,11 +6,13 @@ import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { getArticleBySlug, resolveAffiliateLinks, type Article } from "@/lib/articles";
 import {
-  Clock, ArrowLeft, Shield, Lock, ArrowRight, ChevronRight, Lightbulb
+  Clock, ArrowLeft, Shield, Lock, ArrowRight, ChevronRight, Lightbulb, Bookmark, BookmarkCheck
 } from "lucide-react";
 import ShareButtons from "@/components/blog/ShareButtons";
+import { toast } from "sonner";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
@@ -22,13 +24,11 @@ function MarkdownRenderer({ content }: { content: string }) {
   const resolved = resolveAffiliateLinks(content);
 
   const renderLine = (line: string, i: number) => {
-    // Headings
     const h2Match = line.match(/^## (.+?)(?:\s*\{#([\w-]+)\})?$/);
     if (h2Match) return <h2 key={i} id={h2Match[2] || ""} className="text-xl font-bold text-foreground mt-8 mb-4 scroll-mt-24">{h2Match[1]}</h2>;
     const h3Match = line.match(/^### (.+?)(?:\s*\{#([\w-]+)\})?$/);
     if (h3Match) return <h3 key={i} id={h3Match[2] || ""} className="text-lg font-semibold text-foreground mt-6 mb-3 scroll-mt-24">{h3Match[1]}</h3>;
 
-    // List items
     if (line.match(/^- /)) {
       return <li key={i} className="text-foreground/80 ml-4 list-disc">{renderInline(line.slice(2))}</li>;
     }
@@ -46,9 +46,7 @@ function MarkdownRenderer({ content }: { content: string }) {
     let key = 0;
 
     while (remaining.length > 0) {
-      // Bold
       const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
-      // Links
       const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/);
 
       const boldIdx = boldMatch ? remaining.indexOf(boldMatch[0]) : Infinity;
@@ -102,11 +100,25 @@ function TableOfContents({ headings, activeId }: { headings: Article["headings"]
 
 export default function BlogArticle() {
   const { slug } = useParams();
-  const { isPro } = useAuth();
+  const { isPro, user } = useAuth();
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingBrief, setSavingBrief] = useState(false);
 
   const article = slug ? getArticleBySlug(slug) : undefined;
+
+  useEffect(() => {
+    if (!user || !article) return;
+    supabase
+      .from("saved_briefs")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("slug", article.slug)
+      .then(({ data }) => {
+        if (data && data.length > 0) setIsSaved(true);
+      });
+  }, [user, article]);
 
   useEffect(() => {
     if (!article) return;
@@ -124,6 +136,35 @@ export default function BlogArticle() {
     return () => observer.disconnect();
   }, [article]);
 
+  const toggleSave = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!article) return;
+    setSavingBrief(true);
+    try {
+      if (isSaved) {
+        await supabase
+          .from("saved_briefs")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("slug", article.slug);
+        setIsSaved(false);
+        toast.success("Brief removed from saved");
+      } else {
+        await supabase
+          .from("saved_briefs")
+          .insert({ user_id: user.id, title: article.title, slug: article.slug });
+        setIsSaved(true);
+        toast.success("Brief saved!");
+      }
+    } catch {
+      toast.error("Failed to update saved briefs");
+    }
+    setSavingBrief(false);
+  };
+
   if (!article) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -140,7 +181,6 @@ export default function BlogArticle() {
   }
 
   const isGated = article.isPro && !isPro;
-
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = article.title;
 
@@ -157,7 +197,6 @@ export default function BlogArticle() {
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono mb-6">
             <Link to="/blog" className="hover:text-primary transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3 w-3" /> Intelligence Archive
@@ -167,9 +206,7 @@ export default function BlogArticle() {
           </div>
 
           <div className="grid lg:grid-cols-[1fr_220px] gap-10">
-            {/* Main content */}
             <div>
-              {/* Header */}
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                   <Badge variant="outline" className={`text-[10px] font-mono ${severityColors[article.severity]}`}>
@@ -185,10 +222,18 @@ export default function BlogArticle() {
                   <span>{article.date}</span>
                   <span>•</span>
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{article.readTime}</span>
+                  <button
+                    onClick={toggleSave}
+                    disabled={savingBrief}
+                    className="ml-auto flex items-center gap-1.5 text-xs transition-colors hover:text-primary"
+                    title={isSaved ? "Remove from saved" : "Save brief"}
+                  >
+                    {isSaved ? <BookmarkCheck className="h-4 w-4 text-primary" /> : <Bookmark className="h-4 w-4" />}
+                    {isSaved ? "Saved" : "Save"}
+                  </button>
                 </div>
               </div>
 
-              {/* Key Takeaways */}
               <div className="glass-panel rounded-xl p-5 cyber-border mb-8">
                 <div className="flex items-center gap-2 mb-3">
                   <Lightbulb className="h-4 w-4 text-primary" />
@@ -204,7 +249,6 @@ export default function BlogArticle() {
                 </ul>
               </div>
 
-              {/* Body */}
               {isGated ? (
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10 flex items-end justify-center pb-12">
@@ -229,13 +273,11 @@ export default function BlogArticle() {
                 </div>
               )}
 
-              {/* Share */}
               <div className="mt-10 pt-6 border-t border-border/30">
                 <ShareButtons url={shareUrl} title={shareTitle} />
               </div>
             </div>
 
-            {/* Sidebar TOC — desktop only */}
             <aside className="hidden lg:block">
               <TableOfContents headings={article.headings} activeId={activeId} />
             </aside>

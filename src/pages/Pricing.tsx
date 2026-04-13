@@ -36,7 +36,7 @@ const tiers = [
     cta: "Start Pro Trial",
     ctaVariant: "hero" as const,
     popular: true,
-    priceId: { monthly: "pro_monthly", annual: "pro_yearly" },
+    priceId: { monthly: "price_1TLiOCC1O032lUHcBIWVdoNn", annual: "price_1TLiOfC1O032lUHcsWxc2nkY" },
     features: [
       { text: "Everything in Free", included: true },
       { text: "Full article & research access", included: true },
@@ -87,7 +87,7 @@ export default function Pricing() {
     setLoading(tierName);
     try {
       const { data, error } = await supabase.functions.invoke("stripe-checkout", {
-        body: { priceType: annual ? priceId.annual : priceId.monthly },
+        body: { priceId: annual ? priceId.annual : priceId.monthly },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
