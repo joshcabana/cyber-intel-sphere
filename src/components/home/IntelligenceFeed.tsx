@@ -2,53 +2,7 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Clock, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-
-const articles = [
-  {
-    id: 1,
-    title: "Critical: RAG Pipeline Injection Vectors in Production LLM Systems",
-    category: "VULNERABILITY",
-    severity: "CRITICAL",
-    date: "Apr 11, 2026",
-    readTime: "8 min",
-    excerpt: "New class of indirect prompt injection attacks targeting retrieval-augmented generation pipelines.",
-    isPro: false,
-    slug: "rag-injection-vectors",
-  },
-  {
-    id: 2,
-    title: "Agent-to-Agent Protocol Exploitation: OAuth Scope Escalation in MCP",
-    category: "RESEARCH",
-    severity: "HIGH",
-    date: "Apr 10, 2026",
-    readTime: "12 min",
-    excerpt: "Model Context Protocol deployments expose lateral movement paths through misconfigured tool permissions.",
-    isPro: true,
-    slug: "mcp-oauth-exploitation",
-  },
-  {
-    id: 3,
-    title: "Defense Brief: Securing Agentic Workflows with Runtime Guardrails",
-    category: "DEFENSE",
-    severity: "INFO",
-    date: "Apr 9, 2026",
-    readTime: "6 min",
-    excerpt: "Practical implementation guide for runtime monitoring and policy enforcement in multi-agent systems.",
-    isPro: false,
-    slug: "agentic-runtime-guardrails",
-  },
-  {
-    id: 4,
-    title: "Supply Chain Analysis: Backdoor Detection in Fine-Tuned Model Weights",
-    category: "ANALYSIS",
-    severity: "HIGH",
-    date: "Apr 8, 2026",
-    readTime: "15 min",
-    excerpt: "Comprehensive methodology for detecting malicious modifications in open-weight models.",
-    isPro: true,
-    slug: "model-supply-chain-backdoors",
-  },
-];
+import { getAllArticles } from "@/lib/articles";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
@@ -60,6 +14,7 @@ export default function IntelligenceFeed() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const articles = getAllArticles().slice(0, 6);
 
   const checkScroll = () => {
     const el = scrollRef.current;
@@ -110,7 +65,6 @@ export default function IntelligenceFeed() {
           </div>
         </div>
 
-        {/* Horizontal carousel */}
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 -mx-4 px-4"
@@ -118,12 +72,12 @@ export default function IntelligenceFeed() {
         >
           {articles.map((article) => (
             <Link
-              key={article.id}
+              key={article.slug}
               to={`/blog/${article.slug}`}
               className="group flex-shrink-0 w-[320px] md:w-[360px] glass-panel rounded-xl p-5 hover:border-primary/30 transition-all duration-300 cyber-border-hover snap-start flex flex-col"
             >
               <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline" className={`text-[10px] font-mono ${severityColors[article.severity]}`}>
+                <Badge variant="outline" className={`text-[10px] font-mono ${severityColors[article.severity] || severityColors.INFO}`}>
                   {article.severity}
                 </Badge>
                 <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
