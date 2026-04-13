@@ -1,67 +1,49 @@
 
 
-## Fix: Create STATUS.md to unblock CI pipeline
+## Fix: Harden `leads` table RLS policies
 
-### Problem
-The `deploy.yml` verify job fails at step "Verify STATUS.md baseline" because `STATUS.md` does not exist in the repository. The script `verify-status-doc.mjs` → `readStatusDocument()` throws immediately. This has been the root failure for every CI run.
+### Findings addressed
 
-### What STATUS.md needs
-The parser in `lib/status-data.mjs` requires a specific markdown format:
-
-1. **Pinned baseline header** matching:
-   ```
-   **Pinned baseline:** `origin/main` @ `<commit-sha>` **Last updated:** <date> **Updated by:** <author>
-   ```
-2. **Verification pipeline line**: `**Verification pipeline:** <description>`
-3. **`## Site Status`** section with a markdown table (header + divider + rows), including a "Latest deploy" row
-4. **`## Content`** section with a markdown table
-5. **`## Open PRs`** section
+1. **RLS Policy Always True** — the INSERT policy uses `WITH CHECK (true)`, flagged as overly permissive
+2. **No explicit SELECT deny** — no SELECT policy exists, relying on implicit Supabase behavior
+3. **No read protection for lead emails** — emails could be exposed if a permissive policy is added later
 
 ### Changes
 
-**1. Create `STATUS.md`** with the required structure, using the current `main` HEAD SHA as the pinned baseline.
+**Single migration** to:
 
-**2. Add a `sync:status-doc` script to `package.json`** so maintainers can update it easily: `"sync:status-doc": "node scripts/sync-status-doc.mjs"`
+1. **Add explicit deny-all SELECT policy** on `leads` — ensures email addresses are never readable via client SDK (anon or authenticated). Admin access happens via service role in edge functions.
 
-### File template
+2. **Tighten the INSERT policy** — restrict to only allow inserts where `email` is not null and `source` is not null, rather than a blanket `true`. The policy remains open to anon/authenticated (required for public lead capture) but validates the data shape.
 
-```text
-# STATUS
+```sql
+-- 1. Deny all reads via client
+CREATE POLICY "No public read on leads"
+  ON public.leads FOR SELECT
+  USING (false);
 
-**Pinned baseline:** `origin/main` @ `<current-main-sha>` **Last updated:** 2026-04-13 **Updated by:** Lovable
+-- 2. Drop the overly permissive insert policy
+DROP POLICY "Anyone can submit a lead" ON public.leads;
 
-**Verification pipeline:** CI verify job in `.github/workflows/deploy.yml`
-
-## Site Status
-
-| Metric | Value |
-| --- | --- |
-| Domain | aithreatbrief.com |
-| Latest deploy | `main` @ `<current-main-sha>` |
-| Build status | ✅ passing |
-
-## Content
-
-| Metric | Value |
-| --- | --- |
-| Published articles | 10 |
-| Draft articles | 0 |
-
-## Open PRs
-
-None.
+-- 3. Re-create with basic validation
+CREATE POLICY "Anyone can submit a lead"
+  ON public.leads FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (
+    email IS NOT NULL
+    AND source IS NOT NULL
+    AND char_length(email) BETWEEN 5 AND 320
+  );
 ```
 
-The SHA will be resolved at implementation time from the latest commit on main.
+### After migration
+
+Mark all three findings as resolved via the security tool.
 
 ### Files changed
 
 | File | Action |
 |------|--------|
-| `STATUS.md` | Create with required format |
-| `package.json` | Add `sync:status-doc` script |
-
-### Risk
-- Low — this is a new file that doesn't touch any existing code
-- The SHA pinning means CI will pass for the commit that introduces this file (the `EXPECTED_STATUS_BASELINE_SHA` env var uses `github.event.before`, which will match)
+| Migration SQL | Harden leads RLS |
+| No code changes needed | Lead capture form already works correctly |
 
