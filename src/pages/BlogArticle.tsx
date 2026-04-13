@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { getArticleBySlug, resolveAffiliateLinks, type Article } from "@/lib/articles";
 import {
-  Clock, ArrowLeft, Share2, Twitter, Linkedin, Link2, Copy,
-  Shield, Lock, ArrowRight, ChevronRight, Lightbulb
+  Clock, ArrowLeft, Shield, Lock, ArrowRight, ChevronRight, Lightbulb
 } from "lucide-react";
-import { toast } from "sonner";
+import ShareButtons from "@/components/blog/ShareButtons";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
