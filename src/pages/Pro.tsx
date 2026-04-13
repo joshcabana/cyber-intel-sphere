@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Shield, Zap, ArrowRight, Check, Lock, FileText, Filter, Flame, Users } from "lucide-react";
 
@@ -16,6 +17,7 @@ const benefits = [
 export default function Pro() {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead title="Pro Access" description="Unlock full AI security intelligence — every briefing, the complete Stack Matrix, streak tracking, and priority intel. One prevented incident covers years of Pro." path="/pro" />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4">

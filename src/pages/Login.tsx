@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Shield, ArrowRight, CheckCircle2, Mail } from "lucide-react";
@@ -43,6 +44,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative intelligence-grid">
+      <SEOHead title="Sign In" description="Access your AI Threat Brief intelligence dashboard with a passwordless magic link." path="/login" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
 
       <div className="w-full max-w-md mx-auto px-4 relative z-10">
