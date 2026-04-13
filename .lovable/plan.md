@@ -1,62 +1,42 @@
 
 
-## Step 5 — Wire Up Remaining Hardcoded Data & Lead Capture
+## Fix: Align CI/CD with Lovable's Package Manager
 
-### Current state
-
-Steps 1-4 are complete. Three components still use hardcoded placeholder data, and the lead magnet form is a no-op.
-
-### Problem areas
-
-1. **Dashboard "Latest Briefings"** (lines 125-145 in `Dashboard.tsx`) — three hardcoded items instead of real articles
-2. **LeadMagnet email form** — `handleSubmit` just sets local state; emails are lost
-3. **MatrixTeaser** — hardcoded `previewTools` array duplicates data already in `Matrix.tsx`
+### Problem
+The `deploy.yml` workflow expects pnpm + pnpm-lock.yaml, but the repo uses bun + bun.lock. It also references 5 npm scripts that don't exist in package.json.
 
 ### Changes
 
-**1. Dashboard: replace hardcoded briefings with real articles**
-- Import `getAllArticles()` from `src/lib/articles.ts`
-- Render the latest 3 articles with real titles, severity badges, dates, and links to `/blog/{slug}`
+**1. Switch `deploy.yml` from pnpm to bun**
+- Replace `pnpm/action-setup` with `oven-sh/setup-bun@v2`
+- Replace `actions/setup-node` cache config (remove `cache: 'pnpm'`)
+- Replace all `pnpm install --frozen-lockfile` → `bun install --frozen-lockfile`
+- Replace all `pnpm run` / `pnpm` script calls → `bun run`
+- Replace `pnpm dlx vercel@...` → `bunx vercel@...`
 
-**2. Lead capture: create `leads` table and wire up the form**
-- Create a `leads` table via migration: `id`, `email`, `source` (default `'checklist'`), `created_at`
-- RLS policy: allow anonymous inserts (public lead capture), no select/update/delete for anon
-- Update `LeadMagnet.tsx` to insert into `leads` table on submit with error handling and toast feedback
+**2. Add missing scripts to `package.json`**
+- `typecheck` → `tsc --noEmit`
+- `test:unit` → `vitest run`
+- `test:smoke` → `node scripts/smoke-test.mjs` (file already exists)
+- `verify:status-doc` → `node scripts/verify-status-doc.mjs` (file already exists)
+- `check:content` → `node scripts/content-manifest.mjs --check` (file already exists)
 
-**3. MatrixTeaser: pull top tools dynamically**
-- Import the `tools` array from `Matrix.tsx` (export it as a named export)
-- Sort by rating descending, take top 4 — eliminates the duplicate hardcoded list
+**3. Do the same for all other workflow files**
+- `article-factory.yml` — switch from pnpm to bun
+- `newsletter-compiler.yml`, `performance-logger.yml`, `seo-affiliate.yml`, `weekly-harvest.yml` — check and align if they also use pnpm
 
 ### Files changed
 
 | File | Action |
 |------|--------|
-| `src/pages/Dashboard.tsx` | Replace hardcoded briefings with `getAllArticles().slice(0,3)` |
-| `src/components/home/LeadMagnet.tsx` | Wire form to insert into `leads` table |
-| `src/components/home/MatrixTeaser.tsx` | Import tools from Matrix, sort by rating |
-| `src/pages/Matrix.tsx` | Export `tools` array as named export |
-| Migration | Create `leads` table with anonymous insert RLS |
+| `.github/workflows/deploy.yml` | Switch pnpm → bun throughout |
+| `package.json` | Add missing script entries |
+| `.github/workflows/article-factory.yml` | Switch pnpm → bun |
+| Other workflow files | Audit and align if needed |
 
-### Technical details
-
-**`leads` table schema:**
-```sql
-CREATE TABLE public.leads (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email text NOT NULL,
-  source text NOT NULL DEFAULT 'checklist',
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can submit a lead"
-  ON public.leads FOR INSERT
-  TO anon, authenticated
-  WITH CHECK (true);
-```
-
-**Dashboard briefings** will use `getAllArticles().slice(0, 3)` with `<Link>` wrapping each card, replacing the static array. Relative dates will use a simple helper (`formatRelativeDate`).
-
-**MatrixTeaser** will import `tools` from Matrix.tsx (add `export` keyword), then `.sort((a,b) => b.rating - a.rating).slice(0,4)`.
+### Technical notes
+- `oven-sh/setup-bun@v2` is the standard GitHub Action for bun
+- `bun install --frozen-lockfile` works with `bun.lock`
+- The `cache` option on `actions/setup-node` should be removed (bun handles its own caching, or use `oven-sh/setup-bun` cache)
+- All referenced scripts (`smoke-test.mjs`, `verify-status-doc.mjs`, `content-manifest.mjs`) already exist in the repo — they just need package.json entries
 
