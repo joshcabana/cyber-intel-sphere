@@ -25,6 +25,7 @@ export default function Footer() {
               <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Research</Link>
               <Link to="/matrix" className="text-sm text-muted-foreground hover:text-primary transition-colors">Stack Matrix</Link>
               <Link to="/tools" className="text-sm text-muted-foreground hover:text-primary transition-colors">Tools</Link>
+              <Link to="/newsletter" className="text-sm text-muted-foreground hover:text-primary transition-colors">Newsletter</Link>
               <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link>
               <Link to="/methodology" className="text-sm text-muted-foreground hover:text-primary transition-colors">Methodology</Link>
             </div>
