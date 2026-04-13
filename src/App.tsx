@@ -22,6 +22,7 @@ import Corrections from "./pages/Corrections";
 import Methodology from "./pages/Methodology";
 import Tools from "./pages/Tools";
 import Assessment from "./pages/Assessment";
+import Newsletter from "./pages/Newsletter";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/methodology" element={<Methodology />} />
             <Route path="/tools" element={<Tools />} />
             <Route path="/assessment" element={<Assessment />} />
+            <Route path="/newsletter" element={<Newsletter />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
