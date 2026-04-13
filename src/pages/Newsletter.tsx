@@ -80,7 +80,7 @@ function SubscribeForm({ source }: { source: string }) {
 
   if (submitted) {
     return (
-      <div className="flex items-center justify-center gap-2 text-green-400 font-medium py-3">
+      <div className="flex items-center justify-center gap-2 text-primary font-medium py-3">
         <CheckCircle2 className="h-5 w-5" />
         You're subscribed — check your inbox.
       </div>
