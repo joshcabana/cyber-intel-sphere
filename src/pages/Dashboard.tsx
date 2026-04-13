@@ -12,6 +12,7 @@ import {
   TrendingUp, Clock, CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
+import { getAllArticles } from "@/lib/articles";
 
 export default function Dashboard() {
   const { profile, isPro, refreshProfile } = useAuth();
@@ -122,26 +123,24 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" /> Latest Briefings
               </h2>
-              {[
-                { title: "Critical: RAG Pipeline Injection Vectors in Production LLM Systems", severity: "CRITICAL", time: "2h ago" },
-                { title: "Agent-to-Agent Protocol Exploitation: OAuth Scope Escalation", severity: "HIGH", time: "1d ago" },
-                { title: "Defense Brief: Securing Agentic Workflows with Runtime Guardrails", severity: "INFO", time: "2d ago" },
-              ].map((item, i) => (
-                <div key={i} className="glass-panel rounded-lg p-4 hover:border-primary/30 transition-all cyber-border-hover cursor-pointer">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-medium text-foreground text-sm">{item.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+              {getAllArticles().slice(0, 3).map((article) => (
+                <Link key={article.slug} to={`/blog/${article.slug}`} className="block">
+                  <div className="glass-panel rounded-lg p-4 hover:border-primary/30 transition-all cyber-border-hover cursor-pointer">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-medium text-foreground text-sm">{article.title}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">{article.date}</p>
+                      </div>
+                      <Badge variant="outline" className={`text-[10px] font-mono shrink-0 ${
+                        article.severity === "CRITICAL" ? "bg-destructive/20 text-destructive border-destructive/30" :
+                        article.severity === "HIGH" ? "bg-warning/20 text-warning border-warning/30" :
+                        "bg-primary/20 text-primary border-primary/30"
+                      }`}>
+                        {article.severity}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className={`text-[10px] font-mono shrink-0 ${
-                      item.severity === "CRITICAL" ? "bg-destructive/20 text-destructive border-destructive/30" :
-                      item.severity === "HIGH" ? "bg-warning/20 text-warning border-warning/30" :
-                      "bg-primary/20 text-primary border-primary/30"
-                    }`}>
-                      {item.severity}
-                    </Badge>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 

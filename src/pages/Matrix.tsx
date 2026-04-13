@@ -19,7 +19,7 @@ export type Tool = {
   affiliate?: string; // affiliate code key
 };
 
-const tools: Tool[] = [
+export const tools: Tool[] = [
   // ── LLM Security ──────────────────────────────────────
   { name: "Protect AI", category: "LLM Security", pricing: "Enterprise", rating: 4.5, description: "End-to-end AI/ML security platform covering the full lifecycle", tags: ["lifecycle", "supply-chain", "enterprise"], affiliate: "protect-ai" },
   { name: "LLM Guard", category: "LLM Security", pricing: "Open Source", rating: 4.1, description: "Input/output sanitization toolkit for LLM interactions", tags: ["sanitization", "input-output", "open-source"], affiliate: "llm-guard" },

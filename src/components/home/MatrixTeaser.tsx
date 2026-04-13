@@ -2,13 +2,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Grid3X3, Filter, Download, ExternalLink } from "lucide-react";
+import { tools } from "@/pages/Matrix";
 
-const previewTools = [
-  { name: "NordVPN", category: "Privacy & VPN", rating: 4.7 },
-  { name: "HiddenLayer", category: "Model Scanning", rating: 4.7 },
-  { name: "Lakera Guard", category: "AI Firewall", rating: 4.6 },
-  { name: "ProtonVPN", category: "Privacy & VPN", rating: 4.6 },
-];
+const previewTools = [...tools].sort((a, b) => b.rating - a.rating).slice(0, 4);
 
 export default function MatrixTeaser() {
   return (
@@ -28,8 +24,8 @@ export default function MatrixTeaser() {
                 The most comprehensive, independently curated database of AI security tools, frameworks, and platforms. Searchable, filterable, and brutally honest.
               </p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5"><Grid3X3 className="h-4 w-4 text-primary/60" /> 18 Tools Live</span>
-                <span className="flex items-center gap-1.5"><Filter className="h-4 w-4 text-primary/60" /> 12 Categories</span>
+                <span className="flex items-center gap-1.5"><Grid3X3 className="h-4 w-4 text-primary/60" /> {tools.length} Tools Live</span>
+                <span className="flex items-center gap-1.5"><Filter className="h-4 w-4 text-primary/60" /> {new Set(tools.map(t => t.category)).size} Categories</span>
                 <span className="flex items-center gap-1.5"><Download className="h-4 w-4 text-primary/60" /> CSV/PDF Export (Pro)</span>
               </div>
               <Link to="/matrix">
