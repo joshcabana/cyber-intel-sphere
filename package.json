@@ -15,7 +15,8 @@
     "test:unit": "vitest run",
     "test:smoke": "node scripts/smoke-test.mjs",
     "verify:status-doc": "node scripts/verify-status-doc.mjs",
-    "check:content": "node scripts/content-manifest.mjs --check"
+    "check:content": "node scripts/content-manifest.mjs --check",
+    "sync:status-doc": "node scripts/sync-status-doc.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
