@@ -14,10 +14,17 @@ export default function LeadMagnet() {
     e.preventDefault();
     if (!email || loading) return;
     setLoading(true);
-    const { error } = await supabase.from("leads").insert({ email, source: "checklist" } as any);
+    const { data, error } = await supabase.functions.invoke("submit-lead", {
+      body: { email, source: "checklist" },
+    });
     setLoading(false);
     if (error) {
-      toast.error("Something went wrong — please try again.");
+      const status = (error as any)?.context?.status;
+      if (status === 429) {
+        toast.error("Too many attempts — please wait a minute and try again.");
+      } else {
+        toast.error("Something went wrong — please try again.");
+      }
       return;
     }
     setSubmitted(true);
