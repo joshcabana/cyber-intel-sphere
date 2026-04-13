@@ -1,55 +1,40 @@
 
 
-## What's been completed so far
+## Step 4 — Homepage & Remaining UI Polish
 
-1. **Environment Setup** — `.env.example`, `README.md`, runtime env check in `main.tsx` (done)
-2. **Vite Compatibility** — Verified clean, no fixes needed (done)
-3. **Core UI** — Homepage, Blog, Matrix, Dashboard, Pricing, About, Login pages (done)
-4. **Auth** — Magic link OTP via Supabase, AuthProvider, ProtectedRoute (done)
-5. **Stripe** — Edge functions for checkout & webhooks, Pricing page (done)
-6. **Affiliate system** — Full resolver with 30+ entries in `src/lib/affiliate-links.ts` (done)
-7. **Content** — Imported articles with full markdown bodies, BlogArticle renderer (done)
-8. **Referral system** — Cookie-based referral tracking, Dashboard display (done)
+### Verified ✓
+- Blog page: Real articles rendering with category filters, severity badges, PRO locks
+- Article detail: Full markdown body, author, date, back link all working
+- SEO: Dynamic page titles confirmed (e.g. "Critical: RAG Pipeline Injection... | AI Threat Brief")
 
-## Recommended next step: Step 3 — Content Pipeline Integration
+### What to tackle next
 
-The Blog page currently uses **hardcoded placeholder articles** (5 static entries in `Blog.tsx`), completely disconnected from the rich imported article library in `src/lib/imported-articles.ts` (which has full bodies, authors, takeaways, etc.). This is the highest-impact fix — it makes the site look real.
+The **homepage** is the next high-impact fix. The `IntelligenceFeed.tsx` component still uses **hardcoded placeholder articles** (lines 6-70) identical to the old Blog placeholders we just replaced. Visitors land on the homepage first, so this needs to pull from real data.
+
+Additionally, several pages are missing SEO head tags, and the `Pro.tsx` page lacks them too.
 
 ### Changes
 
-**1. Connect Blog listing to the real article data**
-- Update `src/pages/Blog.tsx` to import from `src/lib/articles.ts` (which already aggregates `importedArticles`) instead of using hardcoded placeholder data
-- Render real titles, dates, categories, excerpts, severity badges, and Pro locks
-- Add category filtering (the data already has categories like "AI Threats", "Privacy", "VPN")
+**1. Connect `IntelligenceFeed.tsx` to real article data**
+- Replace the hardcoded `articles` array with `getAllArticles().slice(0, 5)` from `src/lib/articles.ts`
+- Keep the existing horizontal-scroll card layout and styling intact
 
-**2. Add SEO metadata per page**
-- Create a lightweight `useDocumentTitle` hook or use `document.title` in each page's `useEffect`
-- Set proper `<title>` and `<meta description>` for Index, Blog, Matrix, About, Pricing pages
-- Add Open Graph tags via a small `Helmet`-style component (react-helmet-async) for social sharing with aithreatbrief.com branding
+**2. Add SEO head to remaining pages**
+- `Pro.tsx` — add SEOHead with Pro-specific title/description
+- `Login.tsx` — add SEOHead
+- `Dashboard.tsx` — add SEOHead
+- `NotFound.tsx` — add SEOHead with noindex
 
-**3. Generate a sitemap and update robots.txt**
-- Create a build-time script that outputs `public/sitemap.xml` from the article slugs in `imported-articles.ts`
-- Update `public/robots.txt` to reference `https://aithreatbrief.com/sitemap.xml`
+**3. Connect `MatrixTeaser.tsx` preview to real Matrix data** (optional, low effort)
+- Pull the top 4 tools from the `tools` array in Matrix.tsx instead of a separate hardcoded list
 
 ### Files changed
 
 | File | Action |
 |------|--------|
-| `src/pages/Blog.tsx` | Rewrite to use real article data |
-| `src/components/SEOHead.tsx` | New — reusable meta/OG tag component |
-| `src/pages/Index.tsx` | Add SEO head |
-| `src/pages/About.tsx` | Add SEO head |
-| `src/pages/Matrix.tsx` | Add SEO head |
-| `src/pages/Pricing.tsx` | Add SEO head |
-| `src/pages/BlogArticle.tsx` | Add dynamic SEO head per article |
-| `public/robots.txt` | Update sitemap URL |
-| `scripts/generate-sitemap.mjs` | New — build-time sitemap generator |
-| `package.json` | Add react-helmet-async dependency |
-
-### Why this is the right next step
-
-- The Blog page is the most visible broken piece — visitors see placeholder content instead of real articles
-- SEO/OG tags are essential before promoting the domain
-- The sitemap enables Google indexing immediately after DNS propagation
-- All the data already exists in `imported-articles.ts` — this is wiring, not content creation
+| `src/components/home/IntelligenceFeed.tsx` | Use real article data |
+| `src/pages/Pro.tsx` | Add SEOHead |
+| `src/pages/Login.tsx` | Add SEOHead |
+| `src/pages/Dashboard.tsx` | Add SEOHead |
+| `src/pages/NotFound.tsx` | Add SEOHead |
 
