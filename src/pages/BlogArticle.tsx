@@ -102,7 +102,7 @@ function TableOfContents({ headings, activeId }: { headings: Article["headings"]
 
 export default function BlogArticle() {
   const { slug } = useParams();
-  const { isPro, user } = useAuth();
+  const { isPro } = useAuth();
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState("");
 
@@ -143,11 +143,6 @@ export default function BlogArticle() {
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = article.title;
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Link copied to clipboard");
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -236,18 +231,7 @@ export default function BlogArticle() {
 
               {/* Share */}
               <div className="mt-10 pt-6 border-t border-border/30">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Share</span>
-                  <button onClick={copyLink} className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" title="Copy link">
-                    <Link2 className="h-4 w-4" />
-                  </button>
-                  <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" title="Share on X">
-                    <Twitter className="h-4 w-4" />
-                  </a>
-                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" title="Share on LinkedIn">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </div>
+                <ShareButtons url={shareUrl} title={shareTitle} />
               </div>
             </div>
 
