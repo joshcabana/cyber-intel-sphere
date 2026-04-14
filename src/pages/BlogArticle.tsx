@@ -179,6 +179,20 @@ export default function BlogArticle() {
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = article.title;
 
+  const articleSchema = generateArticleSchema({
+    title: article.title,
+    description: article.excerpt,
+    datePublished: new Date(article.date).toISOString(),
+    authorName: article.author,
+    authorUrl: "https://aithreatbrief.com/about",
+    publisherName: "AI Threat Brief",
+    publisherUrl: "https://aithreatbrief.com",
+    url: `https://aithreatbrief.com/blog/${article.slug}`,
+    category: article.category,
+    keywords: [article.category, article.severity, "AI security"],
+    wordCount: article.body.split(/\s+/).length,
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
@@ -188,6 +202,10 @@ export default function BlogArticle() {
         type="article"
         publishedTime={new Date(article.date).toISOString()}
         author={article.author}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
