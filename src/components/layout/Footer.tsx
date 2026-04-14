@@ -22,7 +22,7 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Intelligence</h4>
             <div className="flex flex-col gap-2">
-              <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Research</Link>
+              <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Threat Briefs</Link>
               <Link to="/matrix" className="text-sm text-muted-foreground hover:text-primary transition-colors">Stack Matrix</Link>
               <Link to="/tools" className="text-sm text-muted-foreground hover:text-primary transition-colors">Tools</Link>
               <Link to="/newsletter" className="text-sm text-muted-foreground hover:text-primary transition-colors">Newsletter</Link>
