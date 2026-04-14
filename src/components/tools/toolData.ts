@@ -30,6 +30,7 @@ export const toolCategories: ToolCategory[] = [
         price: "From $3.09/mo",
         url: aff("nordvpn", "https://nordvpn.com"),
         badge: "Affiliate partner",
+        isAffiliate: true,
       },
       {
         name: "Mullvad VPN",
@@ -49,6 +50,7 @@ export const toolCategories: ToolCategory[] = [
         price: "Free – $9.99/mo",
         url: aff("protonvpn", "https://protonvpn.com"),
         badge: "Best free option",
+        isAffiliate: true,
       },
       {
         name: "PureVPN",
@@ -58,6 +60,7 @@ export const toolCategories: ToolCategory[] = [
         price: "From $2.14/mo",
         url: aff("purevpn", "https://www.purevpn.com"),
         badge: "Affiliate partner",
+        isAffiliate: true,
       },
       {
         name: "Surfshark",
@@ -67,6 +70,7 @@ export const toolCategories: ToolCategory[] = [
         price: "From $2.19/mo",
         url: aff("surfshark", "https://surfshark.com"),
         badge: "Affiliate partner",
+        isAffiliate: true,
       },
     ],
   },
@@ -114,6 +118,7 @@ export const toolCategories: ToolCategory[] = [
         url: aff("proton-mail", "https://proton.me/mail"),
         badge: "Editors' pick",
         badgeVariant: "secondary",
+        isAffiliate: true,
       },
       {
         name: "SimpleLogin",
@@ -167,6 +172,7 @@ export const toolCategories: ToolCategory[] = [
         price: "From $6.49/mo",
         url: aff("incogni", "https://incogni.com"),
         badge: "Affiliate partner",
+        isAffiliate: true,
       },
     ],
   },

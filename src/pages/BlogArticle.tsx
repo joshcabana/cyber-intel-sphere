@@ -63,7 +63,8 @@ function MarkdownRenderer({ content }: { content: string }) {
         if (isInternal) {
           parts.push(<Link key={key++} to={linkMatch[2]} className="text-primary hover:underline">{linkMatch[1]}</Link>);
         } else {
-          parts.push(<a key={key++} href={linkMatch[2]} target="_blank" rel="noopener noreferrer sponsored" className="text-primary hover:underline">{linkMatch[1]}</a>);
+          const isAffiliateDomain = AFFILIATE_HOSTS.some(h => { try { return new URL(linkMatch![2]).hostname.endsWith(h); } catch { return false; } });
+          parts.push(<a key={key++} href={linkMatch[2]} target="_blank" rel={isAffiliateDomain ? "noopener noreferrer sponsored" : "noopener noreferrer"} className="text-primary hover:underline">{linkMatch[1]}</a>);
         }
         remaining = remaining.slice(linkIdx + linkMatch[0].length);
       }
