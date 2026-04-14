@@ -253,9 +253,9 @@ export function buildDefaultPolicy() {
     version: 2,
     connector_id: GMAIL_CONNECTOR_ID,
     mailbox_email: 'cabana.collections2025@gmail.com',
-    project_name: 'AI Security Brief',
+    project_name: 'AI Threat Brief',
     project_identifiers: [
-      'AI Security Brief',
+      'AI Threat Brief',
       'AITHREATBRIEF.com',
       'aithreatbrief',
       'aithreatbrief.com',
@@ -267,7 +267,7 @@ export function buildDefaultPolicy() {
     matching: {
       mode: 'broad',
       domain_terms: [
-        'AI Security Brief',
+        'AI Threat Brief',
         'AITHREATBRIEF.com',
         'aithreatbrief',
         'aithreatbrief.com',

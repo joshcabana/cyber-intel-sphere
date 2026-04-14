@@ -100,7 +100,7 @@ async function main() {
     model,
     maxTokens: 3500,
     systemPrompt:
-      'You are the weekly research desk for AI Security Brief. Return strict JSON only. No markdown fences. You must only use the curated source items provided by the user prompt.',
+      'You are the weekly research desk for AI Threat Brief. Return strict JSON only. No markdown fences. You must only use the curated source items provided by the user prompt.',
     userPrompt: [
       `Prepare the weekly AI security harvest for ${context.effectiveDate}.`,
       'Return JSON in this shape:',
