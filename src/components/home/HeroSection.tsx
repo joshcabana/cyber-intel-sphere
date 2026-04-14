@@ -59,7 +59,7 @@ export default function HeroSection() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/pro">
+            <Link to="/pricing">
               <Button variant="hero-outline" size="lg" className="text-base px-8 h-12">
                 See Pro tools for teams
               </Button>

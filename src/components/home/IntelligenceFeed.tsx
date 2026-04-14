@@ -3,12 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Clock, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { getAllArticles } from "@/lib/articles";
-
-const severityColors: Record<string, string> = {
-  CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
-  HIGH: "bg-warning/20 text-warning border-warning/30",
-  INFO: "bg-primary/20 text-primary border-primary/30",
-};
+import { severityColors } from "@/lib/constants";
 
 export default function IntelligenceFeed() {
   const scrollRef = useRef<HTMLDivElement>(null);
