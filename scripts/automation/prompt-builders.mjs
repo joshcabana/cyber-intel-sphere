@@ -28,7 +28,7 @@ export function buildArticleFactoryContext(input) {
 export function buildArticleFactoryPrompts(input) {
   return {
     systemPrompt:
-      'You are the article generation engine for AI Security Brief. Return strict JSON only. No markdown fences. Use only the supplied weekly harvest source pack. Do not cite URLs that are not in the source pack. Every article must include a named human author object and explicit primary sources. Brand-level bylines are forbidden.',
+      'You are the article generation engine for AI Threat Brief. Return strict JSON only. No markdown fences. Use only the supplied weekly harvest source pack. Do not cite URLs that are not in the source pack. Every article must include a named human author object and explicit primary sources. Brand-level bylines are forbidden.',
     userPrompt: [
       `Write ${input.articlePlan.length} AI-assisted security briefings for ${input.effectiveDate}.`,
       'The guarded <TEXT> block contains the exact article plan and the weekly harvest source pack.',
@@ -40,7 +40,7 @@ export function buildArticleFactoryPrompts(input) {
       'Requirements:',
       '- Exactly 2 articles.',
       '- Each article should render to roughly 950-1200 words after markdown rendering.',
-      '- The author object is required on every article. Use the named human byline Josh Cabana with the role Editor & Publisher unless explicitly instructed otherwise. Do not use AI Security Brief or any brand name as the author.',
+      '- The author object is required on every article. Use the named human byline Josh Cabana with the role Editor & Publisher unless explicitly instructed otherwise. Do not use AI Threat Brief or any brand name as the author.',
       '- Intro must contain exactly 2 substantial paragraphs.',
       '- 4 or 5 H2 sections.',
       '- Every section must contain exactly 2 substantial paragraphs.',
@@ -104,7 +104,7 @@ export function buildNewsletterCompilerContext(input) {
 export function buildNewsletterCompilerPrompts(input) {
   return {
     systemPrompt:
-      'You are the newsletter editor for AI Security Brief. Return strict JSON only. No markdown fences. Do not publish or reference any email platform UI.',
+      'You are the newsletter editor for AI Threat Brief. Return strict JSON only. No markdown fences. Do not publish or reference any email platform UI.',
     userPrompt: [
       `Compile the weekly newsletter draft for ${input.effectiveDate}.`,
       `Issue number: ${input.issueNumber}.`,
@@ -155,7 +155,7 @@ export function buildSeoOptimiserContext(input) {
 export function buildSeoOptimiserPrompts(input) {
   return {
     systemPrompt:
-      'You are the SEO metadata optimiser for AI Security Brief, an elite enterprise B2B threat intelligence platform. Return strict JSON only. No markdown fences.',
+      'You are the SEO metadata optimiser for AI Threat Brief, an elite enterprise B2B threat intelligence platform. Return strict JSON only. No markdown fences.',
     userPrompt: [
       'Optimise metadata for this AI security article draft.',
       'The guarded <TEXT> block contains the article title, slug, excerpt, and body excerpt.',

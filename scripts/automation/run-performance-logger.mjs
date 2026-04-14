@@ -140,7 +140,7 @@ async function main() {
   const performanceLogPath = path.join(REPO_ROOT, 'logs', 'performance-log.md');
   const existing = (await fileExists(performanceLogPath))
     ? await readText(performanceLogPath)
-    : '# AI Security Brief — Performance Log\n\n| Date | Subscribers | Open Rate | Click Rate | Top Link | Alerts |\n|------|------------|-----------|------------|----------|--------|\n';
+    : '# AI Threat Brief — Performance Log\n\n| Date | Subscribers | Open Rate | Click Rate | Top Link | Alerts |\n|------|------------|-----------|------------|----------|--------|\n';
 
   const next = upsertPerformanceLog(existing, {
     date: context.effectiveDate,

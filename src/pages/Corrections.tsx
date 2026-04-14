@@ -26,7 +26,7 @@ export default function Corrections() {
               <p>If you receive our weekly briefing, hit reply and describe what you think needs correcting. Your email goes straight to our editorial team.</p>
 
               <h3 className="text-lg font-medium text-foreground mt-6 mb-2">Contact us directly</h3>
-              <p>Email <a href="mailto:hello@aisecuritybrief.com" className="text-primary hover:underline">hello@aisecuritybrief.com</a> with the article title, the claim you believe is inaccurate, and what the correct information should be.</p>
+              <p>Email <a href="mailto:hello@aithreatbrief.com" className="text-primary hover:underline">hello@aithreatbrief.com</a> with the article title, the claim you believe is inaccurate, and what the correct information should be.</p>
             </section>
 
             <section>

@@ -47,7 +47,7 @@ export default function AIUse() {
             <section>
               <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Disclosure</h2>
               <p>When an article is AI-assisted, we state it clearly. We tell you what was AI-assisted (research summaries, first drafts, metadata) and what a human reviewer independently validated (fact claims, source accuracy, technical detail, editorial judgment). This transparency lets you assess the work based on where human oversight applied.</p>
-              <p className="mt-3">You can always reach out if you spot an error or want to know more about our process. Email us at <a href="mailto:hello@aisecuritybrief.com" className="text-primary hover:underline">hello@aisecuritybrief.com</a>.</p>
+              <p className="mt-3">You can always reach out if you spot an error or want to know more about our process. Email us at <a href="mailto:hello@aithreatbrief.com" className="text-primary hover:underline">hello@aithreatbrief.com</a>.</p>
             </section>
 
             <section>
