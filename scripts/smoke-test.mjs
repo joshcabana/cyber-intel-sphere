@@ -1,31 +1,143 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
-import { readFile, readdir } from 'node:fs/promises';
-import net from 'node:net';
+import { createServer } from 'node:http';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
-const viteBinary = path.join(
-  root,
-  'node_modules',
-  '.bin',
-  process.platform === 'win32' ? 'vite.cmd' : 'vite',
-);
+const distRoot = path.resolve(distDir);
 
-function findFreePort() {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.listen(0, '127.0.0.1', () => {
-      const addr = server.address();
-      if (!addr || typeof addr === 'string') { reject(new Error('No port')); return; }
-      server.close(() => resolve(addr.port));
-    });
-    server.on('error', reject);
-  });
-}
+const contentTypes = new Map([
+  ['.css', 'text/css; charset=utf-8'],
+  ['.gif', 'image/gif'],
+  ['.html', 'text/html; charset=utf-8'],
+  ['.ico', 'image/x-icon'],
+  ['.jpeg', 'image/jpeg'],
+  ['.jpg', 'image/jpeg'],
+  ['.js', 'text/javascript; charset=utf-8'],
+  ['.json', 'application/json; charset=utf-8'],
+  ['.map', 'application/json; charset=utf-8'],
+  ['.png', 'image/png'],
+  ['.svg', 'image/svg+xml; charset=utf-8'],
+  ['.txt', 'text/plain; charset=utf-8'],
+  ['.webp', 'image/webp'],
+  ['.woff', 'font/woff'],
+  ['.woff2', 'font/woff2'],
+]);
 
 function pass(label) { console.log(`  ✔ ${label}`); }
+
+function hasExtension(pathname) {
+  return path.basename(pathname).includes('.');
+}
+
+function getContentType(filePath) {
+  return contentTypes.get(path.extname(filePath).toLowerCase()) ?? 'application/octet-stream';
+}
+
+function resolveWithinDist(requestPath) {
+  const relativePath = requestPath === '/' ? 'index.html' : requestPath.replace(/^\/+/, '');
+  const resolvedPath = path.resolve(distRoot, relativePath);
+
+  if (resolvedPath !== distRoot && !resolvedPath.startsWith(`${distRoot}${path.sep}`)) {
+    throw new Error(`Path traversal attempt rejected: ${requestPath}`);
+  }
+
+  return resolvedPath;
+}
+
+async function resolveFilePath(requestPath) {
+  const requestedPath = resolveWithinDist(requestPath);
+
+  try {
+    const requestedStats = await stat(requestedPath);
+    if (requestedStats.isDirectory()) {
+      const nestedIndex = path.join(requestedPath, 'index.html');
+      const nestedStats = await stat(nestedIndex);
+      if (nestedStats.isFile()) {
+        return nestedIndex;
+      }
+    } else if (requestedStats.isFile()) {
+      return requestedPath;
+    }
+  } catch (error) {
+    if (error?.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+
+  if (!hasExtension(requestPath)) {
+    return path.join(distRoot, 'index.html');
+  }
+
+  return null;
+}
+
+async function startPreviewServer() {
+  const server = createServer(async (req, res) => {
+    try {
+      if (!req.url) {
+        res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' });
+        res.end('Missing request URL');
+        return;
+      }
+
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        res.writeHead(405, { allow: 'GET, HEAD' });
+        res.end();
+        return;
+      }
+
+      const url = new URL(req.url, 'http://127.0.0.1');
+      const filePath = await resolveFilePath(url.pathname);
+
+      if (!filePath) {
+        res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+        res.end('Not found');
+        return;
+      }
+
+      const body = await readFile(filePath);
+      res.writeHead(200, {
+        'content-length': String(body.length),
+        'content-type': getContentType(filePath),
+      });
+
+      if (req.method === 'HEAD') {
+        res.end();
+        return;
+      }
+
+      res.end(body);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+      res.end(message);
+    }
+  });
+
+  await new Promise((resolve, reject) => {
+    server.listen(0, '127.0.0.1', () => resolve());
+    server.on('error', reject);
+  });
+
+  const address = server.address();
+  assert(address && typeof address !== 'string', 'Preview server must bind to a numeric port');
+
+  return {
+    port: address.port,
+    close: () => new Promise((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve();
+      });
+    }),
+  };
+}
 
 async function checkDistOutput() {
   const indexHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
@@ -39,49 +151,11 @@ async function checkDistOutput() {
 }
 
 async function checkPreviewServer() {
-  const port = await findFreePort();
-  const child = spawn(viteBinary, ['preview', '--port', String(port), '--strictPort'], {
-    cwd: root,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-
-  // Wait for server ready
-  await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error(`Preview server did not start in 15s.\n${capturedOutput}`));
-    }, 15_000);
-    let capturedOutput = '';
-    let settled = false;
-
-    const appendOutput = (chunk) => {
-      capturedOutput += chunk.toString();
-
-      if (!settled && capturedOutput.includes('Local:')) {
-        settled = true;
-        clearTimeout(timeout);
-        resolve();
-      }
-    };
-
-    child.stdout.on('data', appendOutput);
-    child.stderr.on('data', appendOutput);
-    child.on('error', (err) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-      reject(err);
-    });
-    child.on('exit', (code) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-      reject(new Error(`Preview server exited with code ${code}.\n${capturedOutput}`));
-    });
-  });
+  const previewServer = await startPreviewServer();
 
   try {
     for (const route of ['/', '/login', '/blog']) {
-      const res = await fetch(`http://127.0.0.1:${port}${route}`);
+      const res = await fetch(`http://127.0.0.1:${previewServer.port}${route}`);
       assert.equal(res.status, 200, `GET ${route} must return 200`);
       if (route === '/') {
         const html = await res.text();
@@ -90,7 +164,7 @@ async function checkPreviewServer() {
       pass(`GET ${route} → 200`);
     }
   } finally {
-    child.kill('SIGTERM');
+    await previewServer.close();
   }
 }
 
