@@ -1,4 +1,4 @@
-const fallbackSiteName = 'AI Security Brief';
+const fallbackSiteName = 'AI Threat Brief';
 const fallbackLocalSiteUrl = 'http://localhost:3000';
 const fallbackProductionSiteUrl = 'https://aithreatbrief.com';
 const fallbackLinkedInProfileUrl = 'https://www.linkedin.com/in/josh-cabana-351631393/';
@@ -118,7 +118,7 @@ export const siteConfig = {
       leadMagnetPath: '/lead-magnet',
       name: 'AI Agent Security Readiness Review',
       headline:
-        'Founder, AI Security Brief | AI Application Security, Prompt Injection, Agentic Risk, Red Team-Informed Advisory',
+        'Founder, AI Threat Brief | AI Application Security, Prompt Injection, Agentic Risk, Red Team-Informed Advisory',
       priceLabel: 'AUD 3,500',
       workshopPriceLabel: 'AUD 1,500',
       retainerPriceLabel: 'AUD 2,500/mo',
