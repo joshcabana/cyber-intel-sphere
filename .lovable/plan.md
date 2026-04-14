@@ -1,110 +1,122 @@
 
 
-# Production-Ready Auth + Email + Payments Audit & Fix
+# Phase 1: Homepage, Pricing, Pro & Methodology
 
-## Current State Assessment
-
-| Area | Status | Issues |
-|------|--------|--------|
-| **Login** | Magic link only (OTP) | No email/password signup, no password reset, no email verification enforcement |
-| **Protected routes** | Working (`ProtectedRoute` component) | Only checks `user`, not email verification |
-| **Stripe checkout** | Working with real price IDs | Properly gated behind auth |
-| **Webhook** | Working | Updates profiles on subscription changes |
-| **check-subscription** | Working | Syncs Stripe state to profiles table |
-| **customer-portal** | Working | Already wired to Dashboard |
-| **Emails** | No custom domain configured | Using default Lovable auth emails |
-| **`lib/supabase/server.ts`** | Dead code | Uses Next.js imports (`next/headers`) — will never work in Vite |
-
-## Key Decisions
-
-**Auth model:** The current login is magic-link only. To add email verification enforcement and password reset, we need to switch to **email + password** auth (with magic link as a secondary option). This gives us:
-- Proper signup with email verification
-- Password reset flow (`/reset-password` page)
-- Email confirmation enforcement before dashboard access
-
-## Plan
-
-### 1. Rewrite Login page to support email + password
-
-**`src/pages/Login.tsx`** — Replace magic-link-only form with a tabbed signup/login form:
-- **Sign In tab**: Email + password fields, "Forgot password?" link
-- **Sign Up tab**: Email + password + confirm password, submit calls `supabase.auth.signUp()` with `emailRedirectTo: window.location.origin`
-- After signup, show "Check your email to verify your account" message
-- After login, redirect to `/dashboard`
-- Proper validation (email format, password min 8 chars, passwords match)
-- Loading states and error toasts
-- Keep referral param handling
-
-### 2. Create `/reset-password` page
-
-**`src/pages/ResetPassword.tsx`** — New page:
-- Detects `type=recovery` in URL hash from Supabase email link
-- Shows "Set new password" form with password + confirm
-- Calls `supabase.auth.updateUser({ password })`
-- Success → redirect to `/dashboard`
-- Add route to `App.tsx`
-
-### 3. Enforce email verification
-
-**`src/components/ProtectedRoute.tsx`** — Update to check `user.email_confirmed_at`:
-- If user exists but email not confirmed, show "Please verify your email" screen with resend button
-- Only allow through to children if email is confirmed
-
-**`src/hooks/useAuth.tsx`** — Add `isEmailVerified` to context
-
-### 4. Add forgot password flow
-
-**`src/pages/Login.tsx`** — Add "Forgot password?" link that shows an email input and calls:
-```
-supabase.auth.resetPasswordForEmail(email, {
-  redirectTo: window.location.origin + '/reset-password'
-})
-```
-
-### 5. Configure auth settings
-
-- Do NOT enable auto-confirm (email verification must be enforced)
-- Email confirmation is enabled by default in Lovable Cloud
-
-### 6. Set up custom auth emails
-
-Since no email domain is configured, we need to show the email setup dialog so you can configure a sender domain. After that, we'll scaffold branded auth email templates matching your dark cyber theme.
-
-### 7. Delete dead code
-
-- Remove `lib/supabase/server.ts` (Next.js code that can't work in Vite)
-
-### 8. Wire `refreshProfile` after checkout success
-
-**`src/pages/Dashboard.tsx`** — On mount, check for `?checkout=success` query param and call `refreshProfile()` to immediately sync subscription status.
+Implementing the approved PLAN.md changes for the first four pages, including the mandatory Methodology correction.
 
 ---
 
-## Files Changed
+## 1. Homepage — HeroSection copy update
 
-| File | Change |
+**File: `src/components/home/HeroSection.tsx`**
+
+- Headline → "AI security intelligence without vendor spin."
+- Sub-headline → "Weekly, independent briefings on AI-powered threats, agent failures and stack risks — written for security teams who actually ship."
+- Add 4 outcome bullets (using existing `Shield` icon + `text-foreground/80` styling)
+- Primary CTA: "Get free threat briefs" → `/newsletter`
+- Secondary CTA: "See Pro tools for teams" → `/pro`
+- Micro-trust line: "Independent, vendor-neutral analysis. No sponsored rankings. Ever."
+- Status badge text stays as-is (LIVE THREAT INTELLIGENCE)
+
+## 2. Homepage — New HowItWorks component
+
+**New file: `src/components/home/HowItWorks.tsx`**
+
+3-column responsive strip using existing `glass-panel`, `cyber-border` design tokens:
+- Column 1: "Weekly AI Threat Briefs" — icon: `FileText`
+- Column 2: "Stack Matrix" — icon: `Shield`
+- Column 3: "Pro Tools" — icon: `Zap`
+
+Each column: icon in a rounded container + title + 1-line description. Grid collapses to single column on mobile (`grid md:grid-cols-3`).
+
+**File: `src/pages/Index.tsx`** — Insert `<HowItWorks />` between `IntelligenceFeed` and `SocialProof`.
+
+## 3. Pricing page — Tier copy & FAQ
+
+**File: `src/pages/Pricing.tsx`**
+
+Update `tiers` array:
+- **Free**: description → "Core intelligence for individual practitioners." Features rewritten per spec (full briefs, open Matrix, public blog, basic dashboard). All features marked `included: true` (no X marks — Free is real value).
+- **Pro**: description → "Tools and depth for teams running AI in production." Features updated per spec (advanced filters, exports, saved views, readiness, priority intel, streaks, referrals). CTA → "Start Pro"
+- **Enterprise**: description → "Dedicated AI threat intelligence for your organisation." Features updated per spec (SSO, private feeds, API, analyst sessions, SLAs).
+
+Add after the tier grid:
+- Explicit line: "Core briefs and Stack Matrix entries stay free and open. Pro adds tools, depth and early warnings."
+- FAQ section (3 items in `Accordion` component):
+  1. "What's free vs Pro?"
+  2. "Do you sell rankings or sponsorships?"
+  3. "How does billing and cancellation work?"
+
+## 4. Pro page — Copy refinement
+
+**File: `src/pages/Pro.tsx`**
+
+- Ribbon text → "PRO ACCESS · Tools and depth for teams who ship AI"
+- Headline → "Same independent intel. More power, more speed."
+- Sub-headline → "The briefs and Stack Matrix stay open. Pro adds the tools, depth and early warnings your security team needs to move faster than the next incident."
+- CTA → "Start Pro — $33/mo" (annual rate), supporting line → "One avoided incident pays for years of Pro. The upside is asymmetric — in your favour."
+- Update `benefits` array descriptions per spec
+
+## 5. Methodology page — Add bulleted sections (mandatory correction)
+
+**File: `src/pages/Methodology.tsx`**
+
+Add three new bulleted sections before "How We Evaluate Tools":
+
+**"What We Cover"** — bullets:
+- AI-powered attack techniques and real-world exploit chains
+- Prompt injection, jailbreaks, and agent manipulation
+- Model supply-chain risks and dependency vulnerabilities
+- MLSecOps tooling evaluations and stack architecture reviews
+
+**"How We Source and Vet Intel"** — bullets:
+- Primary research: hands-on red-teaming, reverse engineering, and production testing
+- Trusted public feeds: CVE databases, vendor advisories, academic pre-prints, MITRE ATLAS
+- Practitioner network: verified reports from security engineers in the field
+- Every claim cross-referenced against at least two independent sources before publication
+
+**"How We Handle Corrections and Retractions"** — bullets:
+- Errors are corrected in-place with a visible correction notice and timestamp
+- Material retractions are published as standalone corrections linked from the original
+- All corrections logged on the `/corrections` page
+- Link to `/corrections`
+
+## 6. ExitIntentModal — Copy alignment
+
+**File: `src/components/ExitIntentModal.tsx`**
+
+- Title → "Before you go — are you briefed on this week's AI threats?"
+- Description → updated to match open-intel tone
+- CTA → "Get free threat briefs" → navigates to `/newsletter`
+- Dismiss text → "I'll catch up later"
+
+## 7. LeadMagnet — CTA update
+
+**File: `src/components/home/LeadMagnet.tsx`**
+
+- Headline → "Get free AI threat briefs"
+- Sub-text → emphasise high-signal AI security intel, weekly cadence
+- Button → "Get free threat briefs"
+
+---
+
+## Files changed (Phase 1)
+
+| File | Action |
 |------|--------|
-| `src/pages/Login.tsx` | Rewrite: email+password signup/login with tabs, forgot password |
-| `src/pages/ResetPassword.tsx` | **New**: password reset form |
-| `src/components/ProtectedRoute.tsx` | Add email verification check + resend UI |
-| `src/hooks/useAuth.tsx` | Add `isEmailVerified` field |
-| `src/App.tsx` | Add `/reset-password` route |
-| `src/pages/Dashboard.tsx` | Handle `?checkout=success` with `refreshProfile()` |
-| `lib/supabase/server.ts` | **Delete** (dead Next.js code) |
+| `src/components/home/HeroSection.tsx` | Update copy |
+| `src/components/home/HowItWorks.tsx` | **New** |
+| `src/pages/Index.tsx` | Add HowItWorks import |
+| `src/pages/Pricing.tsx` | Update tiers, add FAQ |
+| `src/pages/Pro.tsx` | Update copy |
+| `src/pages/Methodology.tsx` | Add 3 bulleted sections |
+| `src/components/ExitIntentModal.tsx` | Update copy |
+| `src/components/home/LeadMagnet.tsx` | Update copy |
 
-## No changes to
+## Not touched
 
-- Edge functions (already production-ready)
-- RLS policies (already properly configured with privilege escalation protection)
-- Blog, matrix, automation scripts, existing content
-
-## Manual Tests After Changes
-
-1. **Signup**: Create account → should see "verify email" message → click link in email → should land on dashboard
-2. **Login**: Sign in with email+password → should reach dashboard
-3. **Unverified access**: Sign up but don't verify → try to access `/dashboard` → should see verification prompt
-4. **Password reset**: Click "Forgot password" → enter email → click reset link → set new password → login with new password
-5. **Checkout**: From pricing, click Pro → complete Stripe test checkout → return to dashboard → should show PRO badge
-6. **Manage subscription**: On dashboard, click "Manage Subscription" → should open Stripe portal
-7. **Protected routes**: Log out → visit `/dashboard` → should redirect to `/login`
+- `App.tsx` routing — no changes
+- Supabase/Stripe edge functions — no changes
+- Auth, ProtectedRoute, useAuth — no changes
+- Dashboard, Matrix, BlogArticle — deferred to Phase 2 (after review)
 
