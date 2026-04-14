@@ -15,7 +15,7 @@ import { normalizeLinkTarget } from './url-safety.mjs';
 export const BLOG_DIR = path.join(process.cwd(), 'blog');
 export const REVIEWS_DIR = path.join(process.cwd(), 'reviews');
 export const READ_TIME_PATTERN = /^\d+\s+min$/;
-export const BRAND_AUTHOR_NAME = 'AI Security Brief';
+export const BRAND_AUTHOR_NAME = 'AI Threat Brief';
 export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const CONTENT_SECTION_VALUES = ['editorial', 'review'] as const;
 export const MONETIZATION_VALUES = ['none', 'affiliate'] as const;
