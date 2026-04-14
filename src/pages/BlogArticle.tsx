@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getArticleBySlug, resolveAffiliateLinks, type Article } from "@/lib/articles";
+import { AFFILIATE_HOST_ALLOWLIST } from "@/lib/affiliate-url-policy";
+
+const AFFILIATE_HOSTS = Object.values(AFFILIATE_HOST_ALLOWLIST).flat();
 import {
   Clock, ArrowLeft, Shield, ArrowRight, ChevronRight, Lightbulb, Bookmark, BookmarkCheck
 } from "lucide-react";
