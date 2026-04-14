@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, ArrowRight, Zap } from "lucide-react";
+import { Shield, ArrowRight, Zap, CheckCircle2 } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+
+const outcomes = [
+  "See critical AI threats before they hit your stack.",
+  "Make faster, defensible calls on models, agents and vendors.",
+  "Brief execs in minutes, not hours, with pre-digested intel.",
+  "Build an AI stack that's powerful and hard to break.",
+];
 
 export default function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Background image */}
       <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" width={1920} height={1080} />
       <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
       <div className="absolute inset-0 intelligence-grid opacity-20" />
@@ -25,28 +31,37 @@ export default function HeroSection() {
 
           {/* Main headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            Get the briefing that{" "}
-            <span className="gradient-text">actually matters.</span>
+            AI security intelligence{" "}
+            <span className="gradient-text">without vendor spin.</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-            Actionable threat intel, vulnerability research, and defense strategies for teams navigating AI risks in production.{" "}
-            <span className="text-foreground/80">Independent analysis for security teams.</span>
+            Weekly, independent briefings on AI-powered threats, agent failures and stack risks — written for security teams who actually ship.
           </p>
+
+          {/* Outcome bullets */}
+          <div className="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto text-left animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+            {outcomes.map((text) => (
+              <div key={text} className="flex items-start gap-2 text-sm text-foreground/80">
+                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-            <Link to="/pricing">
+            <Link to="/newsletter">
               <Button variant="hero" size="lg" className="text-base px-8 h-12">
                 <Zap className="h-4 w-4" />
-                Start Pro Trial — $39/mo
+                Get free threat briefs
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/blog">
+            <Link to="/pro">
               <Button variant="hero-outline" size="lg" className="text-base px-8 h-12">
-                Read Free Intelligence
+                See Pro tools for teams
               </Button>
             </Link>
           </div>
@@ -55,15 +70,11 @@ export default function HeroSection() {
           <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs text-muted-foreground font-mono animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             <div className="flex items-center gap-1.5">
               <Shield className="h-3.5 w-3.5 text-primary/60" />
-              <span>100% Independent</span>
+              <span>Independent, vendor-neutral analysis</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-primary/40" />
-              <span>No Vendor Influence</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-primary/40" />
-              <span>Trusted by security teams at scale — growing fast</span>
+              <span>No sponsored rankings. Ever.</span>
             </div>
           </div>
         </div>

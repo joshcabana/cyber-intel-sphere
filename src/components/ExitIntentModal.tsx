@@ -32,27 +32,26 @@ export default function ExitIntentModal() {
         <DialogHeader className="text-center items-center">
           <Shield className="h-10 w-10 text-primary mb-2" />
           <DialogTitle className="text-xl">
-            Wait — your stack may already be compromised.
+            Before you go — are you briefed on this week's AI threats?
           </DialogTitle>
           <DialogDescription className="text-muted-foreground pt-2">
-            73% of AI-enabled organizations experienced a security incident in the last 12 months.
-            Don't be the CISO who missed the brief.
+            Get concise, independent AI security intelligence delivered weekly. No vendor spin, no filler — just the threats that matter to your stack.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 pt-2">
           <Button
             variant="hero"
             className="w-full"
-            onClick={() => { setOpen(false); navigate("/pricing"); }}
+            onClick={() => { setOpen(false); navigate("/newsletter"); }}
           >
-            Lock in Founding Pro — 20% off forever
+            Get free threat briefs
             <ArrowRight className="h-4 w-4" />
           </Button>
           <button
             onClick={() => setOpen(false)}
             className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
-            I'll risk it
+            I'll catch up later
           </button>
         </div>
       </DialogContent>
