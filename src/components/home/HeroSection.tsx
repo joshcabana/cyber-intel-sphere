@@ -12,17 +12,27 @@ const outcomes = [
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" width={1920} height={1080} />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-      <div className="absolute inset-0 intelligence-grid opacity-20" />
-      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary/3 rounded-full blur-[100px]" />
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" aria-labelledby="hero-heading">
+      <img
+        src={heroBg}
+        alt=""
+        role="presentation"
+        className="absolute inset-0 w-full h-full object-cover opacity-30"
+        width={1920}
+        height={1080}
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" aria-hidden="true" />
+      <div className="absolute inset-0 intelligence-grid opacity-20" aria-hidden="true" />
+      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary/3 rounded-full blur-[100px]" aria-hidden="true" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           {/* Status badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary animate-fade-in-up">
-            <span className="relative flex h-2 w-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary animate-fade-in-up" aria-label="Live threat intelligence, updated weekly">
+            <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
@@ -30,7 +40,7 @@ export default function HeroSection() {
           </div>
 
           {/* Main headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          <h1 id="hero-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
             AI security intelligence{" "}
             <span className="gradient-text">without vendor spin.</span>
           </h1>
@@ -41,22 +51,22 @@ export default function HeroSection() {
           </p>
 
           {/* Outcome bullets */}
-          <div className="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto text-left animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+          <ul className="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto text-left animate-fade-in-up list-none p-0" style={{ animationDelay: "0.25s" }}>
             {outcomes.map((text) => (
-              <div key={text} className="flex items-start gap-2 text-sm text-foreground/80">
-                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <li key={text} className="flex items-start gap-2 text-sm text-foreground/80">
+                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden="true" />
                 <span>{text}</span>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
             <Link to="/newsletter">
               <Button variant="hero" size="lg" className="text-base px-8 h-12">
-                <Zap className="h-4 w-4" />
+                <Zap className="h-4 w-4" aria-hidden="true" />
                 Get free threat briefs
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>
             <Link to="/pricing">
@@ -69,11 +79,11 @@ export default function HeroSection() {
           {/* Trust indicators */}
           <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs text-muted-foreground font-mono animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             <div className="flex items-center gap-1.5">
-              <Shield className="h-3.5 w-3.5 text-primary/60" />
+              <Shield className="h-3.5 w-3.5 text-primary/60" aria-hidden="true" />
               <span>Independent, vendor-neutral analysis</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-primary/40" />
+              <span className="h-1 w-1 rounded-full bg-primary/40" aria-hidden="true" />
               <span>No sponsored rankings. Ever.</span>
             </div>
           </div>

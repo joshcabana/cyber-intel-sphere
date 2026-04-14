@@ -32,14 +32,14 @@ export default function LeadMagnet() {
   };
 
   return (
-    <section className="py-20">
+    <section className="py-20" aria-labelledby="lead-heading">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center glass-panel rounded-xl p-8 md:p-12 cyber-border animate-pulse-glow">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 mb-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 mb-6" aria-hidden="true">
             <FileText className="h-7 w-7 text-primary" />
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+          <h2 id="lead-heading" className="text-2xl md:text-3xl font-bold text-foreground mb-3">
             Get free AI threat briefs
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
@@ -47,22 +47,25 @@ export default function LeadMagnet() {
           </p>
 
           {submitted ? (
-            <div className="flex items-center justify-center gap-2 text-success font-medium">
-              <CheckCircle2 className="h-5 w-5" />
+            <div className="flex items-center justify-center gap-2 text-success font-medium" role="status">
+              <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
               You're in — check your inbox for this week's brief.
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" aria-label="Subscribe to threat briefs">
+              <label htmlFor="lead-email" className="sr-only">Email address</label>
               <Input
+                id="lead-email"
                 type="email"
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-secondary border-border/50 h-11 text-foreground placeholder:text-muted-foreground"
                 required
+                autoComplete="email"
               />
               <Button variant="hero" type="submit" className="h-11 px-6 shrink-0" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Get free threat briefs <ArrowRight className="h-4 w-4" /></>}
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Submitting" /> : <>Get free threat briefs <ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
               </Button>
             </form>
           )}
