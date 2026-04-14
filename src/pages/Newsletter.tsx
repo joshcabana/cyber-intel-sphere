@@ -68,7 +68,7 @@ function SubscribeForm({ source }: { source: string }) {
     });
     setLoading(false);
     if (error) {
-      const status = (error as any)?.context?.status;
+      const status = (error as { context?: { status?: number } } | null)?.context?.status;
       if (status === 429) {
         toast.error("Too many attempts — please wait a minute and try again.");
       } else {

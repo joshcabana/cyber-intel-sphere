@@ -11,7 +11,7 @@ const PRODUCT_TIER_MAP: Record<string, string> = {
   "prod_UKN8jH04XHv2uV": "pro_yearly",
 };
 
-const logStep = (step: string, details?: any) => {
+const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
