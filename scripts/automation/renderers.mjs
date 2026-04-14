@@ -304,7 +304,7 @@ export function renderNewsletterDraft({
     '',
     '---',
     '',
-    '*You’re receiving this because you subscribed to AI Security Brief.*  ',
+    '*You’re receiving this because you subscribed to AI Threat Brief.*  ',
     '*[Unsubscribe](#) | [Preferences](#) | [View in browser](#)*  ',
     '',
     '*© 2026 AI Threat Brief. All rights reserved.*',
