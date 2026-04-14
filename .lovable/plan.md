@@ -1,69 +1,110 @@
 
 
-# Remaining Brand Inconsistencies
+# Production-Ready Auth + Email + Payments Audit & Fix
 
-There are **three categories** of stale "AI Security Brief" references still in the codebase:
+## Current State Assessment
+
+| Area | Status | Issues |
+|------|--------|--------|
+| **Login** | Magic link only (OTP) | No email/password signup, no password reset, no email verification enforcement |
+| **Protected routes** | Working (`ProtectedRoute` component) | Only checks `user`, not email verification |
+| **Stripe checkout** | Working with real price IDs | Properly gated behind auth |
+| **Webhook** | Working | Updates profiles on subscription changes |
+| **check-subscription** | Working | Syncs Stripe state to profiles table |
+| **customer-portal** | Working | Already wired to Dashboard |
+| **Emails** | No custom domain configured | Using default Lovable auth emails |
+| **`lib/supabase/server.ts`** | Dead code | Uses Next.js imports (`next/headers`) — will never work in Vite |
+
+## Key Decisions
+
+**Auth model:** The current login is magic-link only. To add email verification enforcement and password reset, we need to switch to **email + password** auth (with magic link as a secondary option). This gives us:
+- Proper signup with email verification
+- Password reset flow (`/reset-password` page)
+- Email confirmation enforcement before dashboard access
+
+## Plan
+
+### 1. Rewrite Login page to support email + password
+
+**`src/pages/Login.tsx`** — Replace magic-link-only form with a tabbed signup/login form:
+- **Sign In tab**: Email + password fields, "Forgot password?" link
+- **Sign Up tab**: Email + password + confirm password, submit calls `supabase.auth.signUp()` with `emailRedirectTo: window.location.origin`
+- After signup, show "Check your email to verify your account" message
+- After login, redirect to `/dashboard`
+- Proper validation (email format, password min 8 chars, passwords match)
+- Loading states and error toasts
+- Keep referral param handling
+
+### 2. Create `/reset-password` page
+
+**`src/pages/ResetPassword.tsx`** — New page:
+- Detects `type=recovery` in URL hash from Supabase email link
+- Shows "Set new password" form with password + confirm
+- Calls `supabase.auth.updateUser({ password })`
+- Success → redirect to `/dashboard`
+- Add route to `App.tsx`
+
+### 3. Enforce email verification
+
+**`src/components/ProtectedRoute.tsx`** — Update to check `user.email_confirmed_at`:
+- If user exists but email not confirmed, show "Please verify your email" screen with resend button
+- Only allow through to children if email is confirmed
+
+**`src/hooks/useAuth.tsx`** — Add `isEmailVerified` to context
+
+### 4. Add forgot password flow
+
+**`src/pages/Login.tsx`** — Add "Forgot password?" link that shows an email input and calls:
+```
+supabase.auth.resetPasswordForEmail(email, {
+  redirectTo: window.location.origin + '/reset-password'
+})
+```
+
+### 5. Configure auth settings
+
+- Do NOT enable auto-confirm (email verification must be enforced)
+- Email confirmation is enabled by default in Lovable Cloud
+
+### 6. Set up custom auth emails
+
+Since no email domain is configured, we need to show the email setup dialog so you can configure a sender domain. After that, we'll scaffold branded auth email templates matching your dark cyber theme.
+
+### 7. Delete dead code
+
+- Remove `lib/supabase/server.ts` (Next.js code that can't work in Vite)
+
+### 8. Wire `refreshProfile` after checkout success
+
+**`src/pages/Dashboard.tsx`** — On mount, check for `?checkout=success` query param and call `refreshProfile()` to immediately sync subscription status.
 
 ---
 
-## Category 1: Email addresses — `hello@aisecuritybrief.com`
+## Files Changed
 
-These use the old domain and should be updated to match the canonical brand (either `hello@aithreatbrief.com` or whatever the active mailbox is — needs your confirmation).
+| File | Change |
+|------|--------|
+| `src/pages/Login.tsx` | Rewrite: email+password signup/login with tabs, forgot password |
+| `src/pages/ResetPassword.tsx` | **New**: password reset form |
+| `src/components/ProtectedRoute.tsx` | Add email verification check + resend UI |
+| `src/hooks/useAuth.tsx` | Add `isEmailVerified` field |
+| `src/App.tsx` | Add `/reset-password` route |
+| `src/pages/Dashboard.tsx` | Handle `?checkout=success` with `refreshProfile()` |
+| `lib/supabase/server.ts` | **Delete** (dead Next.js code) |
 
-| File | Line | Current |
-|------|------|---------|
-| `src/pages/Corrections.tsx` | 29 | `hello@aisecuritybrief.com` (×2, text + href) |
-| `src/pages/AIUse.tsx` | 50 | `hello@aisecuritybrief.com` (×2, text + href) |
-| `scripts/verify-production.mjs` | 20 | `ASSESSMENT_CONTACT_EMAIL = 'hello@aisecuritybrief.com'` |
+## No changes to
 
-## Category 2: Scripts still using "AI Security Brief" in prose / prompts / output
+- Edge functions (already production-ready)
+- RLS policies (already properly configured with privilege escalation protection)
+- Blog, matrix, automation scripts, existing content
 
-| File | What |
-|------|------|
-| `scripts/article-trust.mjs` line 4 | `BRAND_AUTHOR_NAME = 'AI Security Brief'` |
-| `scripts/automation/prompt-builders.mjs` lines 31, 43, 107, 158 | LLM system prompts say "AI Security Brief" |
-| `scripts/automation/run-performance-logger.mjs` line 143 | Markdown header `# AI Security Brief — Performance Log` |
-| `scripts/verify-live.mjs` line 513 | Checks homepage for `'AI Security Brief'` — **this will break** since homepage now says "AI Threat Brief" |
-| `scripts/generate-linkedin-document-teaser.py` lines 2, 56, 188, 189 | PDF title/author/body text |
+## Manual Tests After Changes
 
-## Category 3: Repo/slug references — `ai-security-brief`
-
-These are GitHub repo names, Vercel project slugs, user-agent strings, and config paths. They're functional identifiers rather than user-facing brand, but worth noting:
-
-| File | What |
-|------|------|
-| `scripts/get-vercel-preview-url.mjs` | `DEFAULT_REPO`, `DEFAULT_PROJECT_NAME` = `'ai-security-brief'` |
-| `scripts/generate-status.mjs` | `repository` fallback, `vercel_fallback` URL |
-| `scripts/check-monday-pipeline.mjs` | `DEFAULT_REPO` |
-| `scripts/automation/github.mjs` | User-Agent header |
-| `scripts/automation/feeds.mjs` | User-Agent header |
-| `scripts/verify-ops.mjs` | Console banners, env hint |
-| `scripts/replace-affiliate-links.mjs` | `~/.ai-security-brief/` config directory path |
-| `scripts/generate-linkedin-document-teaser.py` | Output path `marketing/assets/ai-security-brief-pro-launch-teaser.pdf` |
-| `lib/site.ts` lines 106-107 | Beehiiv URLs: `aisec.beehiiv.com` (these are external service URLs — only change if a new Beehiiv publication exists) |
-
-## Category 4: Verify-live script will **fail** (URGENT)
-
-`scripts/verify-live.mjs` line 513 checks `body.includes('AI Security Brief')`. Since we just standardized the homepage to "AI Threat Brief", this smoke test will now **always fail** on the next deploy. This needs an immediate fix.
-
----
-
-## Proposed Changes
-
-### Must-fix (7 files)
-1. **`scripts/verify-live.mjs`** — Change check string to `'AI Threat Brief'` (prevents broken CI)
-2. **`scripts/article-trust.mjs`** — Update `BRAND_AUTHOR_NAME`
-3. **`scripts/automation/prompt-builders.mjs`** — Replace 4 occurrences in LLM prompts
-4. **`scripts/automation/run-performance-logger.mjs`** — Update markdown header
-5. **`scripts/generate-linkedin-document-teaser.py`** — Update PDF metadata and body text
-6. **`src/pages/Corrections.tsx`** — Update email to `hello@aithreatbrief.com`
-7. **`src/pages/AIUse.tsx`** — Update email to `hello@aithreatbrief.com`
-
-### Should-fix (1 file)
-8. **`scripts/verify-production.mjs`** — Update `ASSESSMENT_CONTACT_EMAIL`
-
-### Defer (repo slugs, external service URLs)
-- GitHub repo name, Vercel project slug, Beehiiv URLs, config directory paths — these are infrastructure identifiers. Renaming them would require coordinated changes in GitHub, Vercel, and Beehiiv settings. Flag for a future cleanup but don't change now.
-
-**8 files changed. No database changes. No new dependencies.**
+1. **Signup**: Create account → should see "verify email" message → click link in email → should land on dashboard
+2. **Login**: Sign in with email+password → should reach dashboard
+3. **Unverified access**: Sign up but don't verify → try to access `/dashboard` → should see verification prompt
+4. **Password reset**: Click "Forgot password" → enter email → click reset link → set new password → login with new password
+5. **Checkout**: From pricing, click Pro → complete Stripe test checkout → return to dashboard → should show PRO badge
+6. **Manage subscription**: On dashboard, click "Manage Subscription" → should open Stripe portal
+7. **Protected routes**: Log out → visit `/dashboard` → should redirect to `/login`
 
