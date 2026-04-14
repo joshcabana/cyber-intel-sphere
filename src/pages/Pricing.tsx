@@ -178,7 +178,7 @@ export default function Pricing() {
                       {tier.price.monthly > 0 && (
                         <span className="text-sm text-muted-foreground">/mo</span>
                       )}
-                      {annual && tier.price.annual && tier.price.annual > 0 && (
+                      {annual && (tier.price.annual ?? 0) > 0 && (
                         <span className="text-xs text-muted-foreground ml-2">
                           (${tier.price.annual}/yr)
                         </span>
