@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getArticleBySlug, resolveAffiliateLinks, type Article } from "@/lib/articles";
 import {
-  Clock, ArrowLeft, Shield, Lock, ArrowRight, ChevronRight, Lightbulb, Bookmark, BookmarkCheck
+  Clock, ArrowLeft, Shield, ArrowRight, ChevronRight, Lightbulb, Bookmark, BookmarkCheck
 } from "lucide-react";
 import ShareButtons from "@/components/blog/ShareButtons";
 import { toast } from "sonner";
