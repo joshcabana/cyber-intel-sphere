@@ -19,7 +19,7 @@ export default function TimedScarcityModal() {
     const timer = setTimeout(() => {
       sessionStorage.setItem("timed_shown", "1");
       setOpen(true);
-    }, 45_000); // 45 seconds
+    }, 45_000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -29,30 +29,29 @@ export default function TimedScarcityModal() {
         <DialogHeader className="text-center items-center">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="h-8 w-8 text-primary" />
-            <Zap className="h-6 w-6 text-yellow-400" />
+            <Zap className="h-6 w-6 text-warning" />
           </div>
           <DialogTitle className="text-xl">
-            Only 47 Founding Pro spots remain
+            Stay ahead of AI threats — subscribe free
           </DialogTitle>
           <DialogDescription className="text-muted-foreground pt-2">
-            Founding members lock in <span className="text-primary font-semibold">20% off for life</span>.
-            Once they're gone, full price applies — no exceptions.
-            The threat landscape won't wait for your budget cycle.
+            Get independent, vendor-neutral AI security intelligence delivered weekly.
+            Concise briefings your team can actually act on.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 pt-2">
           <Button
             variant="hero"
             className="w-full"
-            onClick={() => { setOpen(false); navigate("/pricing"); }}
+            onClick={() => { setOpen(false); navigate("/newsletter"); }}
           >
-            Claim my Founding Pro spot
+            Get free threat briefs
           </Button>
           <button
             onClick={() => setOpen(false)}
             className="w-full text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
-            I'll pay full price later
+            I'll catch up later
           </button>
         </div>
       </DialogContent>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Shield, Search, Lock } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export default function Methodology() {
   return (

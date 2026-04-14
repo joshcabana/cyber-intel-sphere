@@ -33,9 +33,9 @@ export default function SocialProof() {
           {testimonials.map((t) => (
             <div
               key={t.role}
-              className="glass-panel rounded-xl p-6 border-l-2 border-l-[hsl(25,95%,53%)] space-y-4"
+              className="glass-panel rounded-xl p-6 border-l-2 border-l-warning space-y-4"
             >
-              <Quote className="h-5 w-5 text-[hsl(25,95%,53%)]/60" />
+              <Quote className="h-5 w-5 text-warning/60" />
               <p className="text-foreground font-medium leading-relaxed">"{t.quote}"</p>
               <p className="text-xs font-mono text-muted-foreground tracking-wide">— {t.role}</p>
             </div>
