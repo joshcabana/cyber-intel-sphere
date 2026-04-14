@@ -17,7 +17,7 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, '..');
 const REQUEST_TIMEOUT_MS = 20000;
 const DEFAULT_ASSESSMENT_LINKEDIN_URL = 'https://www.linkedin.com/in/josh-cabana-351631393/';
-const ASSESSMENT_CONTACT_EMAIL = 'hello@aisecuritybrief.com';
+const ASSESSMENT_CONTACT_EMAIL = 'hello@aithreatbrief.com';
 const ASSESSMENT_CONTACT_HREF = `mailto:${ASSESSMENT_CONTACT_EMAIL}?subject=AI%20Agent%20Security%20Readiness%20Review`;
 
 function getArgValue(name) {

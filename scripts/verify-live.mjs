@@ -510,7 +510,7 @@ async function run() {
         if (response.status !== 200) {
           throw new Error(`Expected HTTP 200, received ${response.status}`);
         }
-        if (!body.includes('AI Security Brief')) {
+        if (!body.includes('AI Threat Brief')) {
           throw new Error('Homepage is missing the site title marker.');
         }
       },

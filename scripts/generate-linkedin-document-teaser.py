@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the LinkedIn document-ad teaser PDF for AI Security Brief Pro."""
+"""Generate the LinkedIn document-ad teaser PDF for AI Threat Brief Pro."""
 
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def draw_heading(pdf: canvas.Canvas) -> None:
 
     pdf.setFillColor(ACCENT_DIM)
     pdf.setFont("Helvetica-Bold", 14)
-    pdf.drawString(42, PAGE_HEIGHT - 132, "Security-leader preview for AI Security Brief Pro")
+    pdf.drawString(42, PAGE_HEIGHT - 132, "Security-leader preview for AI Threat Brief Pro")
 
     pdf.setFillColor(TEXT_MUTED)
     pdf.setFont("Helvetica", 10.5)
@@ -185,8 +185,8 @@ def draw_footer(pdf: canvas.Canvas) -> None:
 def generate_pdf(output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=A4)
-    pdf.setTitle("AI Security Brief Pro Launch Teaser")
-    pdf.setAuthor("AI Security Brief")
+    pdf.setTitle("AI Threat Brief Pro Launch Teaser")
+    pdf.setAuthor("AI Threat Brief")
     pdf.setSubject("LinkedIn document ad teaser")
 
     draw_page_background(pdf)

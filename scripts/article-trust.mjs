@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const BRAND_AUTHOR_NAME = 'AI Security Brief';
+const BRAND_AUTHOR_NAME = 'AI Threat Brief';
 export const MINIMUM_EDITORIAL_TRUST_SCORE = 85;
 export const PENDING_HUMAN_REVIEW = 'PENDING_HUMAN_REVIEW';
 
