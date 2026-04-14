@@ -9,6 +9,7 @@ export interface Tool {
   url?: string;
   badge?: string;
   badgeVariant?: "default" | "secondary" | "outline";
+  isAffiliate?: boolean;
 }
 
 export default function ToolCard({ tool }: { tool: Tool }) {
@@ -32,7 +33,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
           <a
             href={tool.url}
             target="_blank"
-            rel="noopener noreferrer sponsored"
+            rel={tool.isAffiliate ? "noopener noreferrer sponsored" : "noopener noreferrer"}
             className="text-xs text-primary hover:underline flex items-center gap-1"
           >
             Visit <ExternalLink className="h-3 w-3" />
