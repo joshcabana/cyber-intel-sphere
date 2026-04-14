@@ -1,53 +1,104 @@
 
 
-# Final Remediation — Remaining Issues to 100%
+# Full Quality Assurance Audit — AI Threat Brief
 
-Everything from the two audit rounds has been addressed except these items. Grouped by effort.
+## Project Overview
 
----
+AI Threat Brief is a cybersecurity intelligence platform (React 18 + Vite + Tailwind + Lovable Cloud) at **aithreatbrief.com**. It delivers AI threat briefings, a security tools matrix, and a Pro subscription tier via Stripe.
 
-## Quick Fixes (5 items)
-
-**1. ToolCard — `rel="sponsored"` on non-affiliate links**
-`src/components/tools/ToolCard.tsx` line 35 uses `rel="noopener noreferrer sponsored"` for ALL tool links, including Mullvad, Bitwarden, SimpleLogin, CrowdStrike, and Malwarebytes which are NOT affiliate partners. `rel="sponsored"` is an SEO signal that tells Google "this is a paid link" — using it on non-affiliate links is incorrect and could hurt the site's link equity.
-
-Fix: Add an `isAffiliate` boolean to the `Tool` interface. In `toolData.ts`, set it `true` only for tools with the "Affiliate partner" badge. In `ToolCard.tsx`, conditionally use `rel="noopener noreferrer sponsored"` for affiliates and `rel="noopener noreferrer"` for non-affiliates.
-
-**2. BlogArticle MarkdownRenderer — same issue**
-`src/pages/BlogArticle.tsx` line 66 marks ALL external links in article markdown as `rel="sponsored"`. Most outbound links in articles are to source material (NIST, vendor advisories, research papers), not affiliate links.
-
-Fix: Only add `sponsored` when the link URL matches a known affiliate domain from the affiliate allowlist in `affiliate-url-policy.ts`.
-
-**3. Delete orphaned `TimedScarcityModal` component**
-`src/components/TimedScarcityModal.tsx` is no longer imported anywhere. Remove the dead file.
-
-**4. Delete duplicate root-level `lib/` files**
-The project has both `lib/` (root) and `src/lib/` with overlapping files: `affiliate-links.ts`, `articles.ts`, `seo.ts`, `article-trust.ts`. The root `lib/` files are used by Node/Bun automation scripts (not the Vite app). This is not a bug per se, but `lib/site.ts` references `process.env.NEXT_PUBLIC_*` variables — leftover from a Next.js origin. No action needed for the Vite app, but worth noting. Skip this unless the user wants cleanup.
-
-**5. FAQ JSON-LD on Pricing page — verify it renders**
-The `generateFAQSchema` import exists and the schema is generated, but confirm the `<script type="application/ld+json">` tag is actually injected into the page DOM (it was added in a prior batch).
+**Current state:** The live frontend (articles, pricing, tools, auth) is functional. The previous remediation round fixed `rel="sponsored"` logic and deleted the orphaned `TimedScarcityModal`. Security scans pass clean. However, a significant branding issue remains.
 
 ---
 
-## Medium Fixes (2 items)
+## Critical Finding: "Josh Cabana" Not Fully Removed
 
-**6. Pricing page — Free tier shows `$0/mo` on both toggle states**
-Currently line 185: `${annual ? Math.round((tier.price.annual || 0) / 12) : tier.price.monthly}` renders `$0` for Free. Line 187 checks `tier.price.monthly > 0` to decide whether to show `/mo`. This works correctly — Free shows just `$0` with no `/mo`. Confirmed working, no fix needed.
+The user explicitly requested removal of all references to "Josh Cabana." While the **frontend React code** (`src/`) was cleaned, **124 references remain across 9 files** in non-src code:
 
-**7. Security scan**
-Run a security scan to verify no RLS gaps or exposed data exist before declaring 100% done.
+| # | File | Instances | Impact |
+|---|------|-----------|--------|
+| 1 | `index.html` line 23 | `@joshcabana` in twitter:site meta tag | **Visible to crawlers and social previews** |
+| 2 | `content-manifest.json` | 16 author objects with `"Josh Cabana"` | Used by automation scripts to generate future articles |
+| 3 | `scripts/article-trust.mjs` line 9 | `CANONICAL_AUTHOR` hardcoded | Future articles would carry the old name |
+| 4 | `scripts/automation/prompt-builders.mjs` lines 39, 43 | AI prompt instructs to use "Josh Cabana" as byline | Future auto-generated articles would use the old name |
+| 5 | `lib/site.ts` line 112 | `xUrl: 'https://twitter.com/joshcabana'` | Referenced by automation scripts |
+| 6 | `scripts/generate-status.mjs` line 60 | `'joshcabana/ai-security-brief'` fallback repo | Non-critical — GitHub repo identifier |
+| 7 | `scripts/check-monday-pipeline.mjs` line 15 | Same repo fallback | Non-critical |
+| 8 | `scripts/get-vercel-preview-url.mjs` line 7 | Same repo fallback | Non-critical |
+| 9 | `STATUS.md` lines 28-30 | Git merge history references | Non-critical — historical record |
 
 ---
 
-## Implementation Summary
+## Console Warning
 
-| # | File | Change |
-|---|------|--------|
-| 1 | `src/components/tools/ToolCard.tsx` | Add `isAffiliate` prop, conditional `rel` |
-| 2 | `src/components/tools/toolData.ts` | Add `isAffiliate: true` to affiliate tools |
-| 3 | `src/pages/BlogArticle.tsx` | Only add `sponsored` for affiliate domains |
-| 4 | `src/components/TimedScarcityModal.tsx` | Delete file |
-| 5 | Security scan | Run and verify |
+A React warning fires on every page load:
+> "Function components cannot be given refs" in `DialogContent` → `DialogPortal`
 
-Total: 4 file changes + 1 deletion + 1 security check. No new dependencies. No database changes.
+This is a known Radix UI / React 18 compatibility warning (not a bug). `DialogPortal` is a function component that doesn't accept refs. It does not affect functionality. No fix needed unless upgrading to Radix UI v2.
+
+---
+
+## Plan (ordered by severity)
+
+### Step 1 — Fix `index.html` twitter:site meta (user-facing, SEO-critical)
+Change `<meta name="twitter:site" content="@joshcabana" />` to `<meta name="twitter:site" content="@aithreatbrief" />` (or remove the tag if no official Twitter handle exists).
+
+### Step 2 — Update `content-manifest.json` author objects
+Replace all 16 instances of `"name": "Josh Cabana"` with `"name": "AI Threat Brief Research"` and `"role": "Editor & Publisher"` with `"role": "Editorial Team"`.
+
+### Step 3 — Update `scripts/article-trust.mjs` CANONICAL_AUTHOR
+Change line 9 from `name: 'Josh Cabana'` to `name: 'AI Threat Brief Research'` and role to `'Editorial Team'`.
+
+### Step 4 — Update `scripts/automation/prompt-builders.mjs`
+Replace the AI prompt instructions (lines 39, 43) to use "AI Threat Brief Research" as the author name instead of "Josh Cabana".
+
+### Step 5 — Update `lib/site.ts` founder config
+Replace or remove the `founder.xUrl` reference to `joshcabana`. Either point to the brand's Twitter or remove the field.
+
+### Step 6 — Clean up repo fallbacks (low priority)
+Update `joshcabana/ai-security-brief` references in `scripts/generate-status.mjs`, `scripts/check-monday-pipeline.mjs`, and `scripts/get-vercel-preview-url.mjs`. These are GitHub repo identifiers — the correct value depends on the actual GitHub org/repo name. If the repo hasn't been transferred, these can stay as-is.
+
+### Step 7 — Clean up `STATUS.md` merge history
+Remove the `joshcabana/` branch references from the merge history, or replace with anonymized entries.
+
+### Step 8 — Run security scan
+Re-run the security scan after changes to confirm no regressions.
+
+---
+
+## Items Already Verified as Clean
+
+- `rel="sponsored"` logic in `ToolCard.tsx` — correctly conditional on `isAffiliate`
+- `rel="sponsored"` logic in `BlogArticle.tsx` — correctly checks `AFFILIATE_HOST_ALLOWLIST`
+- `TimedScarcityModal.tsx` — already deleted (search returns zero matches)
+- RLS policies — all tables properly protected; linter clean
+- Pricing page — renders correctly; FAQ JSON-LD present
+- Mobile responsiveness — verified in prior walkthrough
+- Frontend branding — all `src/` files use "AI Threat Brief Research"
+
+---
+
+## Runbook for Items Beyond Automated Control
+
+**GitHub repo rename:** The fallback values `joshcabana/ai-security-brief` in scripts reference the GitHub repository slug. If you want to fully remove this name:
+1. Go to GitHub → Settings → Repository name → Rename
+2. Update `GITHUB_REPOSITORY` in your GitHub Actions secrets/env
+3. The fallback strings in scripts will then never trigger (they only fire when `GITHUB_REPOSITORY` env var is unset)
+
+**Twitter handle:** Decide whether `@aithreatbrief` is the correct brand handle for the `twitter:site` meta tag. If no brand handle exists, remove the tag entirely.
+
+---
+
+## Summary
+
+| Category | Status |
+|----------|--------|
+| Frontend code | Clean |
+| Database & RLS | Clean |
+| Security scan | Clean |
+| SEO meta tags | **1 fix needed** (twitter:site) |
+| Automation scripts | **4 files need name removal** |
+| Content manifest | **16 author entries need update** |
+| Dead code | Clean |
+
+**Total: 8 files to update, 0 new dependencies, 0 database changes.**
 
