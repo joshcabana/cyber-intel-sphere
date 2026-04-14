@@ -5,7 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ArrowRight, Zap, Building2 } from "lucide-react";
+import { Check, ArrowRight, Zap, Building2 } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -14,57 +15,68 @@ const tiers = [
   {
     name: "Free",
     price: { monthly: 0, annual: 0 },
-    description: "Essential intelligence for individual practitioners",
+    description: "Core intelligence for individual practitioners.",
+    forWhom: "For security engineers who want high-signal AI threat intel and the Stack Matrix, without yet needing the Pro tooling.",
     cta: "Get Started Free",
     ctaVariant: "hero-outline" as const,
     priceId: null,
     features: [
-      { text: "Weekly threat briefings (summary)", included: true },
-      { text: "Stack Matrix (basic view)", included: true },
-      { text: "Community access", included: true },
-      { text: "Full article access", included: false },
-      { text: "Advanced Matrix filters", included: false },
-      { text: "CSV/PDF export", included: false },
-      { text: "Streak & referral system", included: false },
-      { text: "Priority briefings", included: false },
+      "Weekly AI Threat Briefs — full narrative and sources",
+      "Open access to the Stack Matrix (core views)",
+      "Public blog and methodology access",
+      "Basic dashboard and email alerts",
     ],
   },
   {
     name: "Pro",
     price: { monthly: 39, annual: 390 },
-    description: "Full intelligence access for security professionals",
-    cta: "Start Pro Trial",
+    description: "Tools and depth for teams running AI in production.",
+    forWhom: "For security teams who live with AI systems in prod and need faster workflows, deeper analysis and better evidence for decisions.",
+    cta: "Start Pro",
     ctaVariant: "hero" as const,
     popular: true,
     priceId: { monthly: "price_1TLiOCC1O032lUHcBIWVdoNn", annual: "price_1TLiOfC1O032lUHcsWxc2nkY" },
     features: [
-      { text: "Everything in Free", included: true },
-      { text: "Full article & research access", included: true },
-      { text: "Advanced Matrix with all filters", included: true },
-      { text: "CSV/PDF data export", included: true },
-      { text: "Streak counter & referral credits", included: true },
-      { text: "Priority briefings (48h early)", included: true },
-      { text: "Saved briefs library", included: true },
-      { text: "AI Readiness Assessment", included: true },
+      "All core briefs and Stack Matrix entries (no content paywalls)",
+      "Advanced Matrix filters, comparisons and tagging",
+      "CSV / PDF export for audits and internal briefings",
+      "Saved views and saved briefs library per user",
+      "AI Readiness Assessment and ongoing score tracking",
+      "Priority intel: critical findings up to 48 hours early",
+      "Streaks and referral credits to keep the team engaged",
     ],
   },
   {
     name: "Enterprise",
     price: { monthly: null, annual: null },
-    description: "Custom intelligence for security organizations",
+    description: "Dedicated AI threat intelligence for your organisation.",
+    forWhom: "For security and risk teams that need multi-seat access, private feeds and direct analyst support.",
     cta: "Contact Sales",
     ctaVariant: "hero-outline" as const,
     priceId: null,
     features: [
-      { text: "Everything in Pro", included: true },
-      { text: "Team seats & SSO", included: true },
-      { text: "Custom threat feeds", included: true },
-      { text: "API access", included: true },
-      { text: "Dedicated analyst briefings", included: true },
-      { text: "Custom integrations", included: true },
-      { text: "SLA & priority support", included: true },
-      { text: "On-demand research requests", included: true },
+      "Everything in Pro, for your whole team",
+      "SSO and role-based access",
+      "Private, organisation-specific threat feeds and reports",
+      "API access to Matrix and intel data",
+      "Dedicated analyst sessions and on-demand research",
+      "Integration support and SLAs",
     ],
+  },
+];
+
+const faqs = [
+  {
+    question: "What's free vs Pro?",
+    answer: "Every threat brief and Stack Matrix entry is fully readable on the Free plan — no truncation, no paywalls. Pro adds workflow tools: advanced filters, CSV/PDF export, saved views, the AI Readiness Assessment, and priority alerts up to 48 hours before the free feed.",
+  },
+  {
+    question: "Do you sell rankings or sponsorships?",
+    answer: "No. AI Threat Brief is entirely independent. We do not accept pay-to-play placements in our Matrix, and we do not run sponsored guest posts. Where affiliate links exist, they are disclosed and never influence rankings or analysis.",
+  },
+  {
+    question: "How does billing and cancellation work?",
+    answer: "Pro is billed monthly or annually via Stripe. You can cancel any time from your dashboard — no lock-in, no cancellation fees. If you cancel, you keep Pro access until the end of your current billing period.",
   },
 ];
 
@@ -101,7 +113,7 @@ export default function Pricing() {
     <div className="min-h-screen flex flex-col">
       <SEOHead
         title="Pricing"
-        description="One prevented incident pays for years of Pro access. Choose your AI security intelligence level."
+        description="Core briefs and Stack Matrix entries stay free and open. Pro adds tools, depth and early warnings for security teams."
         path="/pricing"
       />
       <Navbar />
@@ -154,6 +166,7 @@ export default function Pricing() {
                     <h3 className="text-lg font-bold text-foreground">{tier.name}</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">{tier.description}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">{tier.forWhom}</p>
                 </div>
 
                 <div className="mb-6">
@@ -187,21 +200,32 @@ export default function Pricing() {
                 </Button>
 
                 <div className="space-y-3">
-                  {tier.features.map((f, i) => (
+                  {tier.features.map((text, i) => (
                     <div key={i} className="flex items-start gap-2.5 text-sm">
-                      {f.included ? (
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      ) : (
-                        <X className="h-4 w-4 text-muted-foreground/30 shrink-0 mt-0.5" />
-                      )}
-                      <span className={f.included ? "text-foreground/80" : "text-muted-foreground/40"}>
-                        {f.text}
-                      </span>
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="text-foreground/80">{text}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground mt-10 max-w-lg mx-auto">
+            Core briefs and Stack Matrix entries stay free and open. Pro adds tools, depth and early warnings.
+          </p>
+
+          {/* FAQ */}
+          <div className="max-w-2xl mx-auto mt-16">
+            <h2 className="text-xl font-bold text-foreground text-center mb-6">Frequently Asked Questions</h2>
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`faq-${i}`}>
+                  <AccordionTrigger className="text-foreground text-left">{faq.question}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
 
           <p className="text-center text-xs text-muted-foreground/60 mt-10 max-w-lg mx-auto">

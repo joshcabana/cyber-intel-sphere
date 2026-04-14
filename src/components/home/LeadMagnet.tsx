@@ -28,7 +28,7 @@ export default function LeadMagnet() {
       return;
     }
     setSubmitted(true);
-    toast.success("Check your inbox!");
+    toast.success("You're in — check your inbox!");
   };
 
   return (
@@ -40,16 +40,16 @@ export default function LeadMagnet() {
           </div>
 
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-            Free: AI Security Readiness Checklist
+            Get free AI threat briefs
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            47-point checklist used by security teams at Fortune 500 companies to audit their AI deployments. No signup wall, no BS.
+            High-signal AI security intelligence, delivered weekly. Threats, vulnerabilities and stack risks — no vendor spin, no filler.
           </p>
 
           {submitted ? (
             <div className="flex items-center justify-center gap-2 text-success font-medium">
               <CheckCircle2 className="h-5 w-5" />
-              Check your inbox — downloading now.
+              You're in — check your inbox for this week's brief.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -62,7 +62,7 @@ export default function LeadMagnet() {
                 required
               />
               <Button variant="hero" type="submit" className="h-11 px-6 shrink-0" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Get the PDF <ArrowRight className="h-4 w-4" /></>}
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Get free threat briefs <ArrowRight className="h-4 w-4" /></>}
               </Button>
             </form>
           )}

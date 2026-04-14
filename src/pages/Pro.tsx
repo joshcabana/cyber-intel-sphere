@@ -3,43 +3,44 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { Shield, Zap, ArrowRight, Check, Lock, FileText, Filter, Flame, Users } from "lucide-react";
+import { Shield, Zap, ArrowRight, Lock, FileText, Filter, Flame, Users } from "lucide-react";
 
 const benefits = [
-  { icon: FileText, title: "Full Research Access", description: "Every briefing, analysis, and deep-dive — no paywalls, no truncated content." },
-  { icon: Filter, title: "Advanced Matrix", description: "All filters, sorting, comparisons, plus CSV and PDF export of the full Stack Matrix." },
-  { icon: Flame, title: "Streak & Gamification", description: "Track your weekly intel engagement. Build your streak, unlock achievements." },
+  { icon: FileText, title: "Full Research Access", description: "Every briefing, analysis and deep-dive — fully readable on Free, with Pro tools to slice, export and act on the data faster." },
+  { icon: Filter, title: "Advanced Matrix", description: "All filters, sorting, comparisons, tagging — plus CSV and PDF export of the full Stack Matrix for audits and internal briefings." },
+  { icon: Flame, title: "Streak & Engagement", description: "Track your weekly intel engagement. Build your streak, keep your team current on AI threats." },
   { icon: Users, title: "Referral Credits", description: "Refer colleagues, both get 1 month Pro free. Build your security network." },
-  { icon: Shield, title: "AI Readiness Score", description: "Comprehensive assessment of your organization's AI security posture." },
-  { icon: Zap, title: "Priority Intel", description: "Get critical briefings 48 hours before they hit the free feed." },
+  { icon: Shield, title: "AI Readiness Score", description: "Comprehensive assessment of your organisation's AI security posture, with ongoing score tracking." },
+  { icon: Zap, title: "Priority Intel", description: "Get critical briefings up to 48 hours before they hit the free feed. React before the crowd." },
 ];
 
 export default function Pro() {
   return (
     <div className="min-h-screen flex flex-col">
-      <SEOHead title="Pro Access" description="Unlock full AI security intelligence — every briefing, the complete Stack Matrix, streak tracking, and priority intel. One prevented incident covers years of Pro." path="/pro" />
+      <SEOHead title="Pro Access" description="Same independent intel. More power, more speed. Pro adds the tools, depth and early warnings your security team needs." path="/pro" />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary mb-6">
-              <Lock className="h-3 w-3" /> PRO ACCESS
+              <Lock className="h-3 w-3" /> PRO ACCESS · Tools and depth for teams who ship AI
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Intelligence without <span className="gradient-text">limitations.</span>
+              Same independent intel.{" "}
+              <span className="gradient-text">More power, more speed.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              One prevented incident covers years of Pro access. Stop reading summaries. Get the full picture.
+              The briefs and Stack Matrix stay open. Pro adds the tools, depth and early warnings your security team needs to move faster than the next incident.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing">
                 <Button variant="hero" size="lg" className="text-base px-8 h-12">
                   <Zap className="h-4 w-4" />
-                  Start Pro — $39/mo
+                  Start Pro — $33/mo
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <span className="text-sm text-muted-foreground">or $390/yr (save 20%)</span>
+              <span className="text-sm text-muted-foreground">One avoided incident pays for years of Pro. The upside is asymmetric — in your favour.</span>
             </div>
           </div>
 
