@@ -14,7 +14,7 @@ export default function LeadMagnet() {
     e.preventDefault();
     if (!email || loading) return;
     setLoading(true);
-    const { data, error } = await supabase.functions.invoke("submit-lead", {
+    const { error } = await supabase.functions.invoke("submit-lead", {
       body: { email, source: "checklist" },
     });
     setLoading(false);
