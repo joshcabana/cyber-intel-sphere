@@ -6,8 +6,8 @@ export const MINIMUM_EDITORIAL_TRUST_SCORE = 85;
 export const PENDING_HUMAN_REVIEW = 'PENDING_HUMAN_REVIEW';
 
 export const CANONICAL_AUTHOR = Object.freeze({
-  name: 'Josh Cabana',
-  role: 'Editor & Publisher',
+  name: 'AI Threat Brief Research',
+  role: 'Editorial Team',
 });
 
 function assert(condition, message) {

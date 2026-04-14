@@ -16,8 +16,8 @@
       "slug": "best-llm-firewall-2026",
       "date": "2026-04-03",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A technical evaluation of the top MLSecOps firewalls for filtering prompts, preventing injection attacks, and securing large language model deployments in production.",
       "category": "Tools",
@@ -70,8 +70,8 @@
       "slug": "preventing-prompt-injection-attacks",
       "date": "2026-04-03",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A tactical guide to mitigating prompt injection attacks in production. Moving beyond fragile regex filters to semantic validation and dual-LLM architectural defenses.",
       "category": "Security Engineering",
@@ -120,8 +120,8 @@
       "slug": "claude-extension-flaw-enabled-zero-click-xss-prompt-injection-via-any-website",
       "date": "2026-03-30",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A critical vulnerability in Anthropic's Claude Chrome Extension exposes users to zero-click XSS prompt injection attacks, allowing malicious actors to execute commands without user interaction. This article examines the technical details, risks, and defensive strategies for organizations and individuals.",
       "category": "AI Threats",
@@ -170,8 +170,8 @@
       "slug": "security-researchers-sound-the-alarm-on-vulnerabilities-in-ai-generated-code",
       "date": "2026-03-30",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A surge in vulnerabilities linked to AI-generated code has prompted security researchers to call for urgent improvements in code review and development practices. This article explores the risks, trends, and defensive strategies for organizations leveraging AI in software development.",
       "category": "AI Threats",
@@ -224,8 +224,8 @@
       "slug": "best-password-managers-for-security-teams-2026",
       "date": "2026-03-26",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A security-focused comparison of enterprise password managers — evaluating zero-knowledge architecture, audit history, SSO integration, and secrets management for IT teams.",
       "category": "Privacy",
@@ -282,8 +282,8 @@
       "slug": "best-vpns-for-cybersecurity-professionals-2026",
       "date": "2026-03-24",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A data-driven comparison of the best VPNs for security analysts, threat researchers, and IT teams — evaluated on encryption, jurisdiction, audit history, and operational security.",
       "category": "Privacy",
@@ -364,8 +364,8 @@
       "slug": "nordvpn-vs-protonvpn-security-comparison",
       "date": "2026-03-24",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "A head-to-head comparison of NordVPN and ProtonVPN for cybersecurity work — covering encryption, jurisdiction, open-source status, audit history, and pricing.",
       "category": "Privacy",
@@ -446,8 +446,8 @@
       "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce",
       "date": "2026-03-19",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Three independent research teams disclosed critical vulnerabilities across Amazon Bedrock AgentCore, LangSmith, and SGLang in March 2026 — collectively enabling DNS-based data exfiltration, account takeover, and unauthenticated remote code execution against AI infrastructure. One of these flaws remains unpatched, and CERT/CC has issued a public advisory.",
       "category": "AI Threats",
@@ -504,8 +504,8 @@
       "slug": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment",
       "date": "2026-03-19",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Proofpoint Threat Research has demonstrated that a single crafted deeplink can weaponise Cursor IDE's MCP installation flow to execute arbitrary commands under a developer's full privileges — exposing the structural security gap at the heart of the Model Context Protocol ecosystem.",
       "category": "AI Threats",
@@ -562,8 +562,8 @@
       "slug": "researchers-discover-major-security-gaps-in-llm-guardrails",
       "date": "2026-03-17",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Palo Alto Networks' Unit 42, Oxford researchers, and a Nature Communications study converge on the same finding: the safety layers enterprises rely on to govern generative AI can be bypassed at scale, by automated tools, in under 60 seconds. The attack success rates are not marginal — they are, in several documented cases, approaching 100%.",
       "category": "AI Threats",
@@ -644,8 +644,8 @@
       "slug": "hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks",
       "date": "2026-03-16",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "IBM X-Force discovered Slopoly, an LLM-generated PowerShell backdoor deployed by Hive0163 that maintained persistent access for 7+ days during a live ransomware engagement. The code self-describes as a \"Polymorphic C2 Persistence Client\" — but isn't actually polymorphic. That gap between what AI claims to build and what it actually builds is the story.",
       "category": "AI Threats",
@@ -718,8 +718,8 @@
       "slug": "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration",
       "date": "2026-03-16",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "China's CNCERT issued a formal warning on March 14 about OpenClaw's inherently weak default configurations. With 97+ CVEs tracked, 135,000+ exposed instances, and zero-click data exfiltration demonstrated in the wild, the open-source AI agent has become a case study in what happens when autonomous systems ship without a security baseline.",
       "category": "AI Threats",
@@ -812,8 +812,8 @@
       "slug": "australias-privacy-act-reforms-2026",
       "date": "2026-03-14",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Australia's Privacy Act has undergone its most significant overhaul since 1988 — with new penalties reaching $50 million, mandatory disclosure of AI decision-making systems, and a new statutory tort for serious privacy invasions. Here's what changed and what it means for your organisation.",
       "category": "Privacy",
@@ -862,8 +862,8 @@
       "slug": "agentic-ai-security-risks",
       "date": "2026-03-12",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Autonomous AI agents are now embedded in enterprise workflows with privileged access to databases, APIs, and critical systems — but the security infrastructure governing them hasn't kept pace. Here's what developers and security teams need to understand right now.",
       "category": "AI Threats",
@@ -912,8 +912,8 @@
       "slug": "how-ai-is-being-used-to-launch-cyberattacks-in-2026",
       "date": "2026-03-10",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "AI has crossed a threshold in 2026 — adversaries are no longer just using it to write phishing emails. Autonomous attack agents, AI-generated malware, and deepfake social engineering are redefining the threat landscape at machine speed.",
       "category": "AI Threats",
@@ -962,8 +962,8 @@
       "slug": "ai-model-prompt-injection-attacks-explained",
       "date": "2026-03-08",
       "author": {
-        "name": "Josh Cabana",
-        "role": "Editor & Publisher"
+        "name": "AI Threat Brief Research",
+        "role": "Editorial Team"
       },
       "excerpt": "Prompt injection is the #1 vulnerability in deployed AI systems — and unlike traditional software flaws, it cannot be patched. Here's how direct and indirect attacks work, real-world exploits from 2024–2026, and the defence strategies that actually reduce risk.",
       "category": "AI Threats",

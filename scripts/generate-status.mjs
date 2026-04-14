@@ -57,7 +57,7 @@ const ci = {
                    : null,
   commit_sha:    process.env.GITHUB_SHA            || null,
   commit_ref:    process.env.GITHUB_REF_NAME       || null,
-  repository:    process.env.GITHUB_REPOSITORY     || 'joshcabana/ai-security-brief',
+  repository:    process.env.GITHUB_REPOSITORY     || 'aithreatbrief/ai-security-brief',
   workflow:      process.env.GITHUB_WORKFLOW        || null,
   actor:         process.env.GITHUB_ACTOR           || null,
   triggered_at:  new Date().toISOString(),
