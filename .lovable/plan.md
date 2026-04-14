@@ -1,106 +1,95 @@
 
 
-# Comprehensive Site Remediation Plan
+# Site Remediation Plan — Opus Review Response
 
-Based on the Opus 4.6 audit, verified against the actual codebase. Items are grouped by priority and scoped to what can be done within this Vite + React SPA architecture.
-
----
-
-## Verified Issues (Confirmed in Code)
-
-| # | Issue | File(s) | Confirmed |
-|---|-------|---------|-----------|
-| 1 | `severityColors` duplicated 4x | Blog, BlogArticle, Dashboard, IntelligenceFeed | Yes |
-| 2 | Streak never resets (adds `daysSince/7`, never zeroes) | useAuth.tsx:79-93 | Yes |
-| 3 | NotFound page wrong theme, no Navbar/Footer, uses `<a>` | NotFound.tsx | Yes |
-| 4 | Hero CTA links to `/pro` (protected route) | HeroSection.tsx:62 | Yes |
-| 5 | Dashboard readiness "72/100" hardcoded | Dashboard.tsx:~170 | Yes |
-| 6 | Newsletter "Daily intelligence" contradicts weekly | Newsletter.tsx:27 | Yes |
-| 7 | No favicon in index.html | index.html | Yes |
-| 8 | Font loaded via blocking `@import` | index.css:5 | Yes |
-| 9 | `generateArticleSchema` / `generateFAQSchema` exist but unused | lib/seo.ts, BlogArticle.tsx, Pricing.tsx | Yes |
-| 10 | No React error boundaries | App.tsx | Yes |
-| 11 | No lazy loading of routes | App.tsx | Yes |
-
-## Rejected / Not Applicable
-
-- **"No robots.txt or sitemap.xml"** — Both exist: `public/robots.txt` and `public/sitemap.xml` + generation script. Auditor missed them.
-- **"Add SSR/SSG"** — Architecture constraint (Vite SPA). Not actionable here. Pre-rendering could be explored later.
-- **"Social login"** — Deferred; not a bug.
+Based on the comprehensive 36-URL review, mapped to confirmed codebase issues. Grouped into three implementation batches.
 
 ---
 
-## Implementation Plan
+## What's Already Fixed (from prior work)
 
-### Batch 1: Bug Fixes (Critical)
+- Newsletter "Daily" -> "Weekly" copy (line 27) — **already done**
+- Dashboard readiness "72/100" -> "—" — **already done**
+- Hero CTA `/pro` -> `/pricing` — **already done**
+- `severityColors` extracted to shared constants — **already done**
+- ErrorBoundary added — **already done**
+- Lazy route loading added — **already done**
+- Favicon added — **already done**
+- Font preloading — **already done**
 
-**1. Fix streak logic** (`src/hooks/useAuth.tsx`)
-- If `daysSince > 14`, reset streak to 1 (missed a week)
-- If `7 <= daysSince <= 14`, increment by 1
-- If `daysSince < 7`, do nothing
+---
 
-**2. Fix Hero CTA** (`src/components/home/HeroSection.tsx`)
-- Change `/pro` link to `/pricing`
+## Batch 1: Trust, Disclosure & Copy Fixes (Quick Wins)
 
-**3. Fix Newsletter copy** (`src/pages/Newsletter.tsx`)
-- Change "Daily intelligence" to "Weekly intelligence" on line 27
+**1. Privacy Policy — add missing third-party services** (`src/pages/Privacy.tsx`)
+- Add Stripe, Vercel, and Supabase/Lovable Cloud to the third-party services list (currently only Beehiiv and GitHub)
 
-**4. Fix Dashboard readiness** (`src/pages/Dashboard.tsx`)
-- Replace hardcoded "72/100" with "—" and text "Not assessed"
-- Keep the "Take assessment" link
+**2. Assessment page — link to `/pricing` instead of `/pro`** (`src/pages/Assessment.tsx`)
+- Line 79: Change `Link to="/pro"` to `Link to="/pricing"` (same protected-route issue as the hero CTA)
 
-### Batch 2: Code Quality
+**3. Methodology page — link to `/pricing` instead of `/pro`** (`src/pages/Methodology.tsx`)
+- Line 71: Change `Link to="/pro"` to `Link to="/pricing"`
 
-**5. Extract `severityColors`** → new file `src/lib/constants.ts`
-- Export the map, import in all 4 files
+**4. Footer — link to `/pricing` instead of `/pro`** (`src/components/layout/Footer.tsx`)
+- Line 38: Change Pro Access link from `/pro` to `/pricing`
 
-**6. Fix NotFound page** (`src/pages/NotFound.tsx`)
-- Add Navbar + Footer, use dark theme (`bg-background`), use `<Link>` from react-router
+**5. About page — add founder credentials block** (`src/pages/About.tsx`)
+- Add a short "Who's behind it" section after the editorial philosophy with Josh Cabana's relevant background and role
 
-**7. Add favicon** (`index.html`)
-- Add `<link rel="icon" href="/placeholder.svg">` (use existing placeholder until user provides a real one)
+**6. Matrix page — add "How we rate" expandable block** (`src/pages/Matrix.tsx`)
+- Add a collapsible section above the table explaining the rating methodology (deployment friction, false positives, architecture)
+- Link to `/methodology` for full details
 
-### Batch 3: Performance & SEO
+**7. Newsletter page — use dynamic article count** (`src/pages/Newsletter.tsx`)
+- Currently shows `articleCount` from `importedArticles.length` — verify this matches actual total from `getAllArticles()` and use that instead for consistency
 
-**8. Move font loading** from `@import` in CSS to `<link rel="preload">` in `index.html`
-- Add `font-display=swap` parameter (already present in the Google Fonts URL)
+---
 
-**9. Wire up JSON-LD schemas**
-- `BlogArticle.tsx`: Use `generateArticleSchema` from `lib/seo.ts`, inject via `<Helmet>`
-- `Pricing.tsx`: Use `generateFAQSchema` for the FAQ section
+## Batch 2: Modal Fatigue & Conversion UX
 
-**10. Add lazy loading for routes** (`App.tsx`)
-- Lazy-load: Assessment, Methodology, Privacy, Terms, AIUse, Corrections, Newsletter, Tools
-- Wrap in `<Suspense>` with a minimal loading fallback
+**8. Remove TimedScarcityModal from homepage** (`src/pages/Index.tsx`)
+- Remove the `TimedScarcityModal` import and component — keep only ScarcityBanner (persistent, non-intrusive) and ExitIntentModal (one-time, intent-based)
 
-**11. Add React ErrorBoundary** 
-- Create `src/components/ErrorBoundary.tsx`
-- Wrap `<Routes>` in App.tsx
+**9. Enterprise CTA — add mailto link instead of toast** (`src/pages/Pricing.tsx`)
+- Line 93: Replace `toast.info(...)` with `window.location.href = "mailto:sales@aithreatbrief.com?subject=Enterprise%20Inquiry"`
+
+**10. Login page — add context line** (`src/pages/Login.tsx`)
+- Add a brief value statement below the heading: "Free access to briefings, Stack Matrix, and your saved intelligence."
+
+---
+
+## Batch 3: Content Architecture & Navigation
+
+**11. Blog archive — add intro explaining content types** (`src/pages/Blog.tsx`)
+- Add a one-line note below the description distinguishing briefings, guides, and comparisons
+
+**12. Matrix — add "Last reviewed" date per-tool** (`src/pages/Matrix.tsx`)
+- Add a `lastReviewed` field to the Tool type and display it in the table (can be a shared date initially like "April 2026")
+
+**13. Corrections page — add "last reviewed" timestamp** (`src/pages/Corrections.tsx`)
+- Check current state and add a "Log last reviewed: [date]" line so the empty log feels maintained
 
 ---
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| `src/lib/constants.ts` | New — shared `severityColors` |
-| `src/hooks/useAuth.tsx` | Fix streak reset logic |
-| `src/components/home/HeroSection.tsx` | CTA `/pro` → `/pricing` |
-| `src/pages/Newsletter.tsx` | "Daily" → "Weekly" |
-| `src/pages/Dashboard.tsx` | Readiness "—" + import constants |
-| `src/pages/NotFound.tsx` | Full redesign with site chrome |
-| `src/pages/Blog.tsx` | Import shared severityColors |
-| `src/pages/BlogArticle.tsx` | Import shared severityColors + add JSON-LD |
-| `src/components/home/IntelligenceFeed.tsx` | Import shared severityColors |
-| `src/pages/Pricing.tsx` | Add FAQ JSON-LD |
-| `src/App.tsx` | Lazy routes + ErrorBoundary |
-| `src/components/ErrorBoundary.tsx` | New |
-| `index.html` | Favicon + font preload |
-| `src/index.css` | Remove `@import` font line |
+| File | Change |
+|------|--------|
+| `src/pages/Privacy.tsx` | Add Stripe, Vercel, Lovable Cloud to third-party list |
+| `src/pages/Assessment.tsx` | `/pro` -> `/pricing` link |
+| `src/pages/Methodology.tsx` | `/pro` -> `/pricing` link |
+| `src/components/layout/Footer.tsx` | `/pro` -> `/pricing` link |
+| `src/pages/About.tsx` | Add founder credentials section |
+| `src/pages/Matrix.tsx` | Add "How we rate" collapsible + per-tool review date |
+| `src/pages/Newsletter.tsx` | Use `getAllArticles().length` for accurate count |
+| `src/pages/Index.tsx` | Remove TimedScarcityModal |
+| `src/pages/Pricing.tsx` | Enterprise CTA -> mailto instead of toast |
+| `src/pages/Login.tsx` | Add context line below heading |
+| `src/pages/Blog.tsx` | Add content-type intro line |
+| `src/pages/Corrections.tsx` | Add "last reviewed" date |
 
 ## Not Touched
-
-- Supabase tables, edge functions, auth — no changes
-- Article content / Matrix data — no changes
-- Stripe integration — no changes
+- Supabase, edge functions, auth, Stripe integration
+- Article content or imported articles data
+- TimedScarcityModal component file itself (just removed from Index)
 
