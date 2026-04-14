@@ -6,6 +6,12 @@ import path from 'node:path';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
+const viteBinary = path.join(
+  root,
+  'node_modules',
+  '.bin',
+  process.platform === 'win32' ? 'vite.cmd' : 'vite',
+);
 
 function findFreePort() {
   return new Promise((resolve, reject) => {
@@ -34,21 +40,43 @@ async function checkDistOutput() {
 
 async function checkPreviewServer() {
   const port = await findFreePort();
-  const child = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], {
+  const child = spawn(viteBinary, ['preview', '--port', String(port), '--strictPort'], {
     cwd: root,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   // Wait for server ready
   await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error('Preview server did not start in 15s')), 15_000);
-    let output = '';
-    child.stdout.on('data', (chunk) => {
-      output += chunk.toString();
-      if (output.includes('Local:')) { clearTimeout(timeout); resolve(); }
+    const timeout = setTimeout(() => {
+      reject(new Error(`Preview server did not start in 15s.\n${capturedOutput}`));
+    }, 15_000);
+    let capturedOutput = '';
+    let settled = false;
+
+    const appendOutput = (chunk) => {
+      capturedOutput += chunk.toString();
+
+      if (!settled && capturedOutput.includes('Local:')) {
+        settled = true;
+        clearTimeout(timeout);
+        resolve();
+      }
+    };
+
+    child.stdout.on('data', appendOutput);
+    child.stderr.on('data', appendOutput);
+    child.on('error', (err) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      reject(err);
     });
-    child.on('error', (err) => { clearTimeout(timeout); reject(err); });
-    child.on('exit', (code) => { clearTimeout(timeout); reject(new Error(`Exited ${code}`)); });
+    child.on('exit', (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      reject(new Error(`Preview server exited with code ${code}.\n${capturedOutput}`));
+    });
   });
 
   try {
