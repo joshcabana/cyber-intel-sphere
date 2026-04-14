@@ -1,6 +1,6 @@
 # STATUS
 
-**Pinned baseline:** `origin/main` @ `6471e42f5961dbcc1e222a7087cdf1a1bb7e94ae` **Last updated:** 15 April 2026 **Updated by:** Codex
+**Pinned baseline:** `origin/main` @ `601c85083ffc760f510c11075c7d590d2ba4afeb` **Last updated:** 15 April 2026 **Updated by:** Codex
 
 **Verification pipeline:** CI verify job in `.github/workflows/deploy.yml`
 
@@ -9,7 +9,7 @@
 | Metric | Value |
 | --- | --- |
 | Domain | aithreatbrief.com |
-| Latest deploy | `main` @ `6471e42f5961dbcc1e222a7087cdf1a1bb7e94ae` — runtime reported active deployment |
+| Latest deploy | `main` @ `601c85083ffc760f510c11075c7d590d2ba4afeb` — runtime reported active deployment |
 | Build status | ✅ passing |
 
 ## Content
@@ -25,6 +25,6 @@ None.
 
 Most recent merges:
 
+- Merge pull request #4 from joshcabana/fix/status-baseline-ci
 - Merge pull request #1 from joshcabana/copilot/analyze-test-coverage
 - Merge pull request #2 from joshcabana/copilot/fix-status-md-baseline-sha
-- Merge pull request #3 from joshcabana/copilot/fix-ci-lint-failures
