@@ -1,6 +1,6 @@
 # STATUS
 
-**Pinned baseline:** `origin/main` @ `0b2c167fb8d4b3d86b91fae6ee139b01c12ca562` **Last updated:** 13 April 2026 **Updated by:** Lovable
+**Pinned baseline:** `origin/main` @ `2edf95cc938603d07fce8375eb3005cfffe8ae7b` **Last updated:** 14 April 2026 **Updated by:** copilot
 
 **Verification pipeline:** CI verify job in `.github/workflows/deploy.yml`
 
@@ -9,7 +9,7 @@
 | Metric | Value |
 | --- | --- |
 | Domain | aithreatbrief.com |
-| Latest deploy | `main` @ `0b2c167fb8d4b3d86b91fae6ee139b01c12ca562` — runtime reported active deployment |
+| Latest deploy | `main` @ `2edf95cc938603d07fce8375eb3005cfffe8ae7b` — runtime reported active deployment |
 | Build status | ✅ passing |
 
 ## Content
