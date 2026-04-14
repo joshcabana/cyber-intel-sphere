@@ -33,16 +33,16 @@ export default function About() {
 
           <div className="glass-panel rounded-xl p-8 cyber-border space-y-6 text-muted-foreground leading-relaxed">
             <p>
-              AI Threat Brief is an independent intelligence platform built for security teams operating in the Agentic Era.
+              AI Threat Brief is an independent intelligence platform built for security teams navigating the Agentic Era — where AI agents, LLM pipelines and model supply chains create attack surfaces that legacy tooling doesn't cover.
             </p>
             <p>
-              Founded by Josh Cabana, every briefing, tool rating, and matrix entry is human-reviewed and primary-source grounded.
+              Founded by Josh Cabana, every briefing, tool rating and matrix entry is human-reviewed and primary-source grounded. We exist because security teams deserve signal, not spin.
             </p>
             <p>
-              We accept no sponsorships or pay-for-play. Some links are affiliate-marked and transparently disclosed — this never affects our analysis.
+              We accept no sponsorships or pay-for-play. Some links are affiliate-marked and transparently disclosed — this never affects our analysis. Core intelligence is always free and open.
             </p>
             <p className="text-foreground font-medium">
-              Our goal: one prevented incident pays for years of intelligence.
+              Our measure of success: one prevented incident that pays for years of intelligence.
             </p>
           </div>
 

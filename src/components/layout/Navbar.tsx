@@ -5,12 +5,11 @@ import { Shield, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const navLinks = [
-  { to: "/", label: "Intelligence" },
+  { to: "/", label: "Home" },
+  { to: "/blog", label: "Briefs" },
   { to: "/matrix", label: "Stack Matrix" },
   { to: "/tools", label: "Tools" },
   { to: "/pricing", label: "Pricing" },
-  { to: "/blog", label: "Research" },
-  { to: "/newsletter", label: "Newsletter" },
   { to: "/about", label: "About" },
 ];
 

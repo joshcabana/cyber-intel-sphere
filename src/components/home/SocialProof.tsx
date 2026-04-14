@@ -2,19 +2,19 @@ import { Quote } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Finally, independent analysis I can actually trust.",
+    quote: "Finally, AI security intel I can actually trust — no vendor spin, just signal.",
     role: "CISO, Fortune-500 FinTech",
   },
   {
-    quote: "The only briefing that matters for agentic AI risks.",
+    quote: "The only briefing my team reads end-to-end. Concise, opinionated, and sourced.",
     role: "Head of AI Security, Major Bank",
   },
   {
-    quote: "Matrix + briefings = my new daily workflow.",
-    role: "Principal Security Engineer, SaaS unicorn",
+    quote: "Stack Matrix + weekly briefs replaced three paid feeds for us.",
+    role: "Principal Security Engineer, SaaS Unicorn",
   },
   {
-    quote: "One prevented RAG injection already paid for the whole year.",
+    quote: "One caught RAG injection already paid for years of Pro. The upside is asymmetric.",
     role: "Director of Security, AI Startup",
   },
 ];
