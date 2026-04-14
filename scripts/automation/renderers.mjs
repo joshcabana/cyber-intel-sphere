@@ -10,7 +10,7 @@ import {
 } from '../article-trust.mjs';
 import { countWords, escapeRegex, FINDING_CATEGORIES, REPO_ROOT, slugify } from './common.mjs';
 
-const NEWSLETTER_ISSUE_PATTERN = /^# Newsletter Issue #(\d+) — AI Security Brief$/m;
+const NEWSLETTER_ISSUE_PATTERN = /^# Newsletter Issue #(\d+) — AI Threat Brief$/m;
 
 const CATEGORY_MAP = {
   Regulation: 'Privacy',
@@ -24,7 +24,7 @@ const CATEGORY_MAP = {
 function renderArticleCtaLine(articleSlug) {
   const newsletterPath = buildNewsletterPath(`article-${articleSlug}-cta`);
 
-  return `**Stay ahead of AI security threats.** Subscribe to the AI Security Brief newsletter for weekly intelligence. [Subscribe now →](${newsletterPath})`;
+  return `**Stay ahead of AI security threats.** Subscribe to the AI Threat Brief newsletter for weekly intelligence. [Subscribe now →](${newsletterPath})`;
 }
 
 export function validateFindingCategory(value) {
@@ -56,7 +56,7 @@ export function renderHarvestMarkdown({ date, weekNumber, findings }) {
     '',
     ...sections,
     '---',
-    `*Harvested by AI Security Brief on ${date}*`,
+    `*Harvested by AI Threat Brief on ${date}*`,
     '',
   ].join('\n');
 }
@@ -252,7 +252,7 @@ export function renderNewsletterDraft({
   });
 
   const lines = [
-    `# Newsletter Issue #${issueNumber} — AI Security Brief`,
+    `# Newsletter Issue #${issueNumber} — AI Threat Brief`,
     '',
     '## Email Configuration',
     '',
@@ -268,7 +268,7 @@ export function renderNewsletterDraft({
     '',
     '### Header',
     '',
-    '**AI SECURITY BRIEF**  ',
+    '**AI THREAT BRIEF**  ',
     '*Intelligence on AI-Powered Threats & Privacy Defence*',
     '',
     `THE BRIEF — ${date} | Issue #${issueNumber}`,
@@ -298,16 +298,16 @@ export function renderNewsletterDraft({
     '',
     '### Stay Sharp',
     '',
-    'AI Security Brief publishes every Monday. Forward this to a colleague who should be reading it.',
+    'AI Threat Brief publishes every Monday. Forward this to a colleague who should be reading it.',
     '',
     `Was this forwarded to you? **[Subscribe here →](${forwardedSubscribePath})**`,
     '',
     '---',
     '',
-    '*You’re receiving this because you subscribed to AI Security Brief.*  ',
+    '*You’re receiving this because you subscribed to AI Threat Brief.*  ',
     '*[Unsubscribe](#) | [Preferences](#) | [View in browser](#)*  ',
     '',
-    '*© 2026 AI Security Brief. All rights reserved.*',
+    '*© 2026 AI Threat Brief. All rights reserved.*',
     '',
   ];
 
@@ -473,7 +473,7 @@ export function upsertPerformanceLog(existingMarkdown, row) {
     .map((entry) => entry[1]);
 
   return [
-    '# AI Security Brief — Performance Log',
+    '# AI Threat Brief — Performance Log',
     '',
     '| Date | Subscribers | Open Rate | Click Rate | Top Link | Alerts |',
     '|------|------------|-----------|------------|----------|--------|',

@@ -35,7 +35,7 @@ const REQUIRED = [
   },
   {
     key: 'NEXT_PUBLIC_SITE_NAME',
-    hint: 'Display name, e.g. "The AI Security Brief"',
+    hint: 'Display name, e.g. "The AI Threat Brief"',
   },
   {
     key: 'UPSTASH_REDIS_REST_URL',
