@@ -25,6 +25,6 @@ None.
 
 Most recent merges:
 
-- Merge pull request #4 from joshcabana/fix/status-baseline-ci
-- Merge pull request #1 from joshcabana/copilot/analyze-test-coverage
-- Merge pull request #2 from joshcabana/copilot/fix-status-md-baseline-sha
+- Merge pull request #4 — fix/status-baseline-ci
+- Merge pull request #1 — copilot/analyze-test-coverage
+- Merge pull request #2 — copilot/fix-status-md-baseline-sha

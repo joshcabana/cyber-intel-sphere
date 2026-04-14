@@ -12,7 +12,7 @@ import {
 
 const execFile = promisify(execFileCallback);
 
-const DEFAULT_REPO = process.env.GITHUB_REPOSITORY?.trim() || 'joshcabana/ai-security-brief';
+const DEFAULT_REPO = process.env.GITHUB_REPOSITORY?.trim() || 'aithreatbrief/ai-security-brief';
 
 export const REQUIRED_WORKFLOWS = [
   {

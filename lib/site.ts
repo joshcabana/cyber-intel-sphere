@@ -109,7 +109,7 @@ export const siteConfig = {
   },
   founder: {
     linkedInUrl: getFounderLinkedInUrl(),
-    xUrl: 'https://twitter.com/joshcabana',
+    xUrl: 'https://twitter.com/aithreatbrief',
   },
   offers: {
     assessment: {

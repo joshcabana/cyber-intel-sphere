@@ -4,7 +4,7 @@ import { writeFileSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const DEFAULT_REPO = process.env.GITHUB_REPOSITORY?.trim() || 'joshcabana/ai-security-brief';
+const DEFAULT_REPO = process.env.GITHUB_REPOSITORY?.trim() || 'aithreatbrief/ai-security-brief';
 const DEFAULT_PROJECT_NAME = 'ai-security-brief';
 const DEFAULT_TIMEOUT_MS = 180000;
 const DEFAULT_POLL_INTERVAL_MS = 10000;
