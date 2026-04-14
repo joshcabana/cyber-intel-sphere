@@ -115,6 +115,7 @@ export default function Login() {
             <span className="font-bold text-foreground text-lg">AI THREAT BRIEF</span>
           </Link>
           <h1 className="text-2xl font-bold text-foreground">Access Your Intelligence</h1>
+          <p className="text-sm text-muted-foreground mt-2">Free access to briefings, Stack Matrix, and your saved intelligence.</p>
           {refApplied && (
             <p className="text-xs text-primary mt-2 font-mono">✓ Referral applied — sign up to activate</p>
           )}

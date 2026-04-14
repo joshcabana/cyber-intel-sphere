@@ -35,7 +35,7 @@ export default function Footer() {
             <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Product</h4>
             <div className="flex flex-col gap-2">
               <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
-              <Link to="/pro" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pro Access</Link>
+              <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pro Access</Link>
               <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
             </div>
           </div>

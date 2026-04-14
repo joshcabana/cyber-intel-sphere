@@ -68,7 +68,7 @@ export default function Methodology() {
               <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Pro Subscriber Promise</h2>
               <p>Our Pro tier completely strips all affiliate and sponsorship noise from the briefings. When you pay for intelligence, you are paying for an uncompromised raw signal. Pro members receive neutral architectural reviews stripped of all tracking parameters.</p>
               <div className="mt-4">
-                <Link to="/pro" className="text-primary hover:underline font-medium">Learn about Pro access →</Link>
+                <Link to="/pricing" className="text-primary hover:underline font-medium">Learn about Pro access →</Link>
               </div>
             </section>
           </div>

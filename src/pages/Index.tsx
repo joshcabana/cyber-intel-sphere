@@ -9,7 +9,7 @@ import MatrixTeaser from "@/components/home/MatrixTeaser";
 import LeadMagnet from "@/components/home/LeadMagnet";
 import ScarcityBanner from "@/components/ScarcityBanner";
 import ExitIntentModal from "@/components/ExitIntentModal";
-import TimedScarcityModal from "@/components/TimedScarcityModal";
+
 
 const Index = () => {
   return (
@@ -31,7 +31,6 @@ const Index = () => {
       </main>
       <Footer />
       <ExitIntentModal />
-      <TimedScarcityModal />
     </div>
   );
 };
