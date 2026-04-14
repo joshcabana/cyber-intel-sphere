@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -16,9 +16,20 @@ import { getAllArticles } from "@/lib/articles";
 
 export default function Dashboard() {
   const { profile, isPro, refreshProfile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [referralCount, setReferralCount] = useState(0);
   const [savedBriefs, setSavedBriefs] = useState<{ title: string; saved_at: string; slug: string | null }[]>([]);
   const [portalLoading, setPortalLoading] = useState(false);
+
+  // Sync subscription after checkout redirect
+  useEffect(() => {
+    if (searchParams.get("checkout") === "success") {
+      refreshProfile();
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
+      toast.success("Payment successful! Your subscription is now active.");
+    }
+  }, []);
 
   useEffect(() => {
     if (!profile) return;
