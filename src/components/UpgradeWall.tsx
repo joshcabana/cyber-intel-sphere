@@ -24,9 +24,9 @@ export default function UpgradeWall({ children, feature = "this feature" }: Prop
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border border-primary/20 mb-4">
             <Lock className="h-6 w-6 text-primary" />
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-2">Pro Access Required</h3>
+          <h3 className="text-lg font-bold text-foreground mb-2">Pro Tool</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            Unlock {feature} with a Pro subscription. One prevented incident pays for years of access.
+            {feature} is a Pro workflow feature. Core intel stays free and open — Pro adds the tools your team needs to move faster.
           </p>
           <Link to={user ? "/pricing" : "/login"}>
             <Button variant="hero" className="w-full">

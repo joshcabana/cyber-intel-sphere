@@ -106,8 +106,8 @@ export default function Matrix() {
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Every tool. <span className="gradient-text">Independently analyzed.</span>
             </h1>
-            <p className="text-muted-foreground max-w-xl">
-              The most comprehensive AI security tool database. Searchable, filterable, and brutally honest. No pay-for-play rankings.
+            <p className="text-muted-foreground max-w-2xl">
+              The most comprehensive AI security tool database. Searchable, filterable, and brutally honest. No pay-for-play rankings. Every entry is open to all users — Pro unlocks advanced filters, CSV/PDF exports, and saved views for teams.
             </p>
             <div className="flex items-center gap-4 mt-3">
               <p className="text-xs font-mono text-muted-foreground/70">

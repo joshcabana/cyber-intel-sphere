@@ -180,7 +180,6 @@ export default function BlogArticle() {
     );
   }
 
-  const isGated = article.isPro && !isPro;
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = article.title;
 
@@ -249,27 +248,24 @@ export default function BlogArticle() {
                 </ul>
               </div>
 
-              {isGated ? (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10 flex items-end justify-center pb-12">
-                    <div className="text-center max-w-md">
-                      <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
-                      <h3 className="text-lg font-bold text-foreground mb-2">Pro Access Required</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        This full research briefing is available exclusively to Pro members.
-                      </p>
-                      <Button variant="hero" onClick={() => navigate("/pricing")}>
-                        Upgrade to Pro <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="blur-sm select-none pointer-events-none max-h-[300px] overflow-hidden">
-                    <MarkdownRenderer content={article.body} />
-                  </div>
-                </div>
-              ) : (
-                <div className="prose-custom">
-                  <MarkdownRenderer content={article.body} />
+              <div className="prose-custom">
+                <MarkdownRenderer content={article.body} />
+              </div>
+
+              {/* Tier-aware CTA after article */}
+              {!isPro && (
+                <div className="glass-panel rounded-xl p-6 cyber-border mt-8 text-center">
+                  <h3 className="font-bold text-foreground mb-2">
+                    {user ? "Upgrade to Pro" : "Get free AI threat briefs"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {user
+                      ? "Unlock advanced Matrix filters, CSV/PDF exports, saved views and priority alerts."
+                      : "Independent AI security intelligence — delivered weekly. No vendor spin."}
+                  </p>
+                  <Button variant="hero" onClick={() => navigate(user ? "/pricing" : "/newsletter")}>
+                    {user ? "See Pro plans" : "Subscribe free"} <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
 
