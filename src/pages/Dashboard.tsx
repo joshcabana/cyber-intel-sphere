@@ -14,11 +14,7 @@ import {
 import { toast } from "sonner";
 import { getAllArticles } from "@/lib/articles";
 
-const severityColors: Record<string, string> = {
-  CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
-  HIGH: "bg-warning/20 text-warning border-warning/30",
-  INFO: "bg-primary/20 text-primary border-primary/30",
-};
+import { severityColors } from "@/lib/constants";
 
 function CategoryFilteredFeed() {
   const articles = getAllArticles();
@@ -182,7 +178,7 @@ export default function Dashboard() {
                 <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Readiness</span>
                 <TrendingUp className="h-5 w-5 text-success" />
               </div>
-              <p className="text-4xl font-bold font-mono text-foreground">72<span className="text-lg text-muted-foreground">/100</span></p>
+              <p className="text-4xl font-bold font-mono text-muted-foreground">—</p>
               <Link to="/assessment" className="mt-2 flex items-center gap-1 text-xs text-primary hover:text-primary/80">
                 Take assessment <ArrowRight className="h-3 w-3" />
               </Link>

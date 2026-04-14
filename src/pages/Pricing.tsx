@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { generateFAQSchema } from "@/lib/seo";
 
 const tiers = [
   {
@@ -109,6 +110,8 @@ export default function Pricing() {
     setLoading(null);
   };
 
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
@@ -116,6 +119,12 @@ export default function Pricing() {
         description="Core briefs and Stack Matrix entries stay free and open. Pro adds tools, depth and early warnings for security teams."
         path="/pricing"
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
         <div className="container mx-auto px-4">

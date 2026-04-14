@@ -13,12 +13,8 @@ import {
 } from "lucide-react";
 import ShareButtons from "@/components/blog/ShareButtons";
 import { toast } from "sonner";
-
-const severityColors: Record<string, string> = {
-  CRITICAL: "bg-destructive/20 text-destructive border-destructive/30",
-  HIGH: "bg-warning/20 text-warning border-warning/30",
-  INFO: "bg-primary/20 text-primary border-primary/30",
-};
+import { severityColors } from "@/lib/constants";
+import { generateArticleSchema } from "@/lib/seo";
 
 function MarkdownRenderer({ content }: { content: string }) {
   const resolved = resolveAffiliateLinks(content);
@@ -183,6 +179,20 @@ export default function BlogArticle() {
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = article.title;
 
+  const articleSchema = generateArticleSchema({
+    title: article.title,
+    description: article.excerpt,
+    datePublished: new Date(article.date).toISOString(),
+    authorName: article.author,
+    authorUrl: "https://aithreatbrief.com/about",
+    publisherName: "AI Threat Brief",
+    publisherUrl: "https://aithreatbrief.com",
+    url: `https://aithreatbrief.com/blog/${article.slug}`,
+    category: article.category,
+    keywords: [article.category, article.severity, "AI security"],
+    wordCount: article.body.split(/\s+/).length,
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
@@ -192,6 +202,10 @@ export default function BlogArticle() {
         type="article"
         publishedTime={new Date(article.date).toISOString()}
         author={article.author}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <Navbar />
       <main className="flex-1 pt-24 pb-20">

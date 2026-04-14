@@ -24,7 +24,7 @@ const benefits = [
   {
     icon: BookOpen,
     title: "Curated Briefings",
-    description: "Daily intelligence on AI threats, model vulnerabilities, and emerging attack patterns — distilled from dozens of sources.",
+    description: "Weekly intelligence on AI threats, model vulnerabilities, and emerging attack patterns — distilled from dozens of sources.",
   },
   {
     icon: Wrench,

@@ -81,16 +81,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const lastLogin = new Date(p.last_login);
     const now = new Date();
     const daysSince = Math.ceil((now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysSince >= 7) {
-      const newStreak = p.streak_count + Math.floor(daysSince / 7);
-      const { data } = await supabase
-        .from("profiles")
-        .update({ streak_count: newStreak, last_login: now.toISOString() })
-        .eq("user_id", p.user_id)
-        .select()
-        .single();
-      if (data) setProfile(data);
-    }
+    if (daysSince < 7) return; // Too soon to update
+    // Reset streak if they missed more than one week window (>14 days gap)
+    const newStreak = daysSince > 14 ? 1 : p.streak_count + 1;
+    const { data } = await supabase
+      .from("profiles")
+      .update({ streak_count: newStreak, last_login: now.toISOString() })
+      .eq("user_id", p.user_id)
+      .select()
+      .single();
+    if (data) setProfile(data);
   };
 
   const refreshProfile = async () => {
