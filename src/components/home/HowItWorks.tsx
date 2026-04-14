@@ -20,10 +20,10 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-16">
+    <section className="py-16" aria-labelledby="how-heading">
       <div className="container mx-auto px-4">
         <p className="text-xs font-mono text-primary tracking-widest text-center mb-3">HOW IT WORKS</p>
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-10">
+        <h2 id="how-heading" className="text-2xl md:text-3xl font-bold text-foreground text-center mb-10">
           Three layers of AI security intelligence
         </h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -32,7 +32,7 @@ export default function HowItWorks() {
               key={step.title}
               className="glass-panel rounded-xl p-6 cyber-border hover:border-primary/30 transition-all group text-center"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 mb-4 group-hover:bg-primary/20 transition-colors">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 mb-4 group-hover:bg-primary/20 transition-colors" aria-hidden="true">
                 <step.icon className="h-6 w-6 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>

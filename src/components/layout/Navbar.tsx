@@ -19,11 +19,11 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30">
+    <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/30" role="banner">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group" aria-label="AI Threat Brief — Home">
           <div className="relative">
-            <Shield className="h-7 w-7 text-primary transition-all group-hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+            <Shield className="h-7 w-7 text-primary transition-all group-hover:drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" aria-hidden="true" />
             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="flex flex-col">
@@ -32,7 +32,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -42,6 +42,7 @@ export default function Navbar() {
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
+              aria-current={location.pathname === link.to ? "page" : undefined}
             >
               {link.label}
             </Link>
@@ -71,19 +72,23 @@ export default function Navbar() {
         <button
           className="md:hidden text-foreground"
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav"
+          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
         >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden glass-panel border-t border-border/30 p-4 space-y-2">
+        <nav id="mobile-nav" className="md:hidden glass-panel border-t border-border/30 p-4 space-y-2" aria-label="Mobile navigation">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setMobileOpen(false)}
               className="block px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+              aria-current={location.pathname === link.to ? "page" : undefined}
             >
               {link.label}
             </Link>
@@ -107,7 +112,7 @@ export default function Navbar() {
               </>
             )}
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

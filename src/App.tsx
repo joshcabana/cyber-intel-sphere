@@ -8,17 +8,17 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import ResetPassword from "./pages/ResetPassword";
-import Dashboard from "./pages/Dashboard";
-import Pricing from "./pages/Pricing";
-import Matrix from "./pages/Matrix";
-import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
-import Pro from "./pages/Pro";
 import NotFound from "./pages/NotFound";
 
-// Lazy-loaded secondary pages
+// Lazy-loaded pages — keep critical homepage eager, defer everything else
+const Login = lazy(() => import("./pages/Login"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Matrix = lazy(() => import("./pages/Matrix"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogArticle = lazy(() => import("./pages/BlogArticle"));
+const Pro = lazy(() => import("./pages/Pro"));
 const About = lazy(() => import("./pages/About"));
 const Referral = lazy(() => import("./pages/Referral"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -33,7 +33,7 @@ const Newsletter = lazy(() => import("./pages/Newsletter"));
 const queryClient = new QueryClient();
 
 const LazyFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
+  <div className="min-h-screen flex items-center justify-center bg-background" role="status" aria-label="Loading page">
     <div className="text-sm font-mono text-muted-foreground animate-pulse">Loading…</div>
   </div>
 );

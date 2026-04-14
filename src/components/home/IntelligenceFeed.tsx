@@ -30,32 +30,34 @@ export default function IntelligenceFeed() {
   };
 
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative" aria-labelledby="feed-heading">
       <div className="container mx-auto px-4">
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-xs font-mono text-primary tracking-widest mb-2">LATEST INTELLIGENCE</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Threat Briefings</h2>
+            <h2 id="feed-heading" className="text-3xl md:text-4xl font-bold text-foreground">Threat Briefings</h2>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-1.5">
               <button
                 onClick={() => scroll("left")}
                 disabled={!canScrollLeft}
+                aria-label="Scroll briefings left"
                 className="p-2 rounded-lg border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 disabled={!canScrollRight}
+                aria-label="Scroll briefings right"
                 className="p-2 rounded-lg border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
             <Link to="/blog" className="hidden md:flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors">
-              View all <ArrowRight className="h-4 w-4" />
+              View all <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -64,12 +66,15 @@ export default function IntelligenceFeed() {
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 -mx-4 px-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          role="list"
+          aria-label="Latest threat briefings"
         >
           {articles.map((article) => (
             <Link
               key={article.slug}
               to={`/blog/${article.slug}`}
               className="group flex-shrink-0 w-[320px] md:w-[360px] glass-panel rounded-xl p-5 hover:border-primary/30 transition-all duration-300 cyber-border-hover snap-start flex flex-col"
+              role="listitem"
             >
               <div className="flex items-center gap-2 mb-3">
                 <Badge variant="outline" className={`text-[10px] font-mono ${severityColors[article.severity] || severityColors.INFO}`}>
@@ -84,7 +89,7 @@ export default function IntelligenceFeed() {
               </div>
 
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm leading-snug mb-3 line-clamp-2 flex-1">
-                {article.isPro && <Lock className="inline h-3.5 w-3.5 mr-1.5 text-primary/60" />}
+                {article.isPro && <Lock className="inline h-3.5 w-3.5 mr-1.5 text-primary/60" aria-hidden="true" />}
                 {article.title}
               </h3>
 
@@ -92,10 +97,10 @@ export default function IntelligenceFeed() {
 
               <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/20">
                 <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{article.readTime}</span>
-                  <span>{article.date}</span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" aria-hidden="true" />{article.readTime}</span>
+                  <time dateTime={article.date}>{article.date}</time>
                 </div>
-                <span className="text-xs text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-xs text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
                   Read <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
@@ -105,7 +110,7 @@ export default function IntelligenceFeed() {
 
         <div className="mt-6 md:hidden text-center">
           <Link to="/blog" className="text-sm text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1">
-            View all briefings <ArrowRight className="h-4 w-4" />
+            View all briefings <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
       </div>
