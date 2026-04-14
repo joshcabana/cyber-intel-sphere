@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -153,25 +153,9 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" /> Latest Briefings
               </h2>
-              {getAllArticles().slice(0, 3).map((article) => (
-                <Link key={article.slug} to={`/blog/${article.slug}`} className="block">
-                  <div className="glass-panel rounded-lg p-4 hover:border-primary/30 transition-all cyber-border-hover cursor-pointer">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="font-medium text-foreground text-sm">{article.title}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{article.date}</p>
-                      </div>
-                      <Badge variant="outline" className={`text-[10px] font-mono shrink-0 ${
-                        article.severity === "CRITICAL" ? "bg-destructive/20 text-destructive border-destructive/30" :
-                        article.severity === "HIGH" ? "bg-warning/20 text-warning border-warning/30" :
-                        "bg-primary/20 text-primary border-primary/30"
-                      }`}>
-                        {article.severity}
-                      </Badge>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+
+              {/* Category filter chips */}
+              <CategoryFilteredFeed />
             </div>
 
             <div className="space-y-4">
