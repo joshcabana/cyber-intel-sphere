@@ -36,7 +36,7 @@ export default function About() {
               AI Threat Brief is an independent intelligence platform built for security teams navigating the Agentic Era — where AI agents, LLM pipelines and model supply chains create attack surfaces that legacy tooling doesn't cover.
             </p>
             <p>
-              Founded by Josh Cabana, every briefing, tool rating and matrix entry is human-reviewed and primary-source grounded. We exist because security teams deserve signal, not spin.
+              Every briefing, tool rating and matrix entry is human-reviewed and primary-source grounded. We exist because security teams deserve signal, not spin.
             </p>
             <p>
               We accept no sponsorships or pay-for-play. Some links are affiliate-marked and transparently disclosed — this never affects our analysis. Core intelligence is always free and open.
@@ -50,13 +50,13 @@ export default function About() {
             <h2 className="text-2xl font-bold text-foreground mb-6">Who's Behind It</h2>
             <div className="glass-panel rounded-xl p-8 cyber-border space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                <strong className="text-foreground">Josh Cabana</strong> — Founder & Editor
+                <strong className="text-foreground">AI Threat Brief</strong> — Independent Editorial Team
               </p>
               <p>
-                Josh is a cybersecurity practitioner and researcher focused on the intersection of AI systems and adversarial risk. He built AI Threat Brief to give security teams the signal they were not getting from vendor marketing or hype-cycle coverage.
+                AI Threat Brief is run by a small team of cybersecurity practitioners and researchers focused on the intersection of AI systems and adversarial risk. We built this platform to give security teams the signal they were not getting from vendor marketing or hype-cycle coverage.
               </p>
               <p>
-                Every briefing, tool rating, and matrix entry is either written or reviewed by Josh before publication.
+                Every briefing, tool rating, and matrix entry is human-reviewed before publication.
               </p>
             </div>
           </div>
