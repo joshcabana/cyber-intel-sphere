@@ -21,6 +21,7 @@ type AuthContextType = {
   profile: Profile | null;
   loading: boolean;
   isPro: boolean;
+  isEmailVerified: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   isPro: false,
+  isEmailVerified: false,
   signOut: async () => {},
   refreshProfile: async () => {},
 });
@@ -122,6 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isPro = profile?.subscription_tier?.startsWith("pro") && profile?.subscription_status === "active";
+  const isEmailVerified = !!user?.email_confirmed_at;
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -129,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, loading, isPro: !!isPro, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ session, user, profile, loading, isPro: !!isPro, isEmailVerified, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
