@@ -65,7 +65,14 @@ function run() {
   const recentMerges = (
     getArgValue('recent-merges')
       ? getArgValue('recent-merges').split('||')
-      : runGit(['log', '--format=%s', `--max-count=${resolveRecentMergeCount()}`, pinnedBaselineRef]).split('\n')
+      : runGit([
+          'log',
+          '--format=%s',
+          '--merges',
+          '--first-parent',
+          `--max-count=${resolveRecentMergeCount()}`,
+          pinnedBaselineRef,
+        ]).split('\n')
   )
     .map((value) => value.trim())
     .filter(Boolean)
