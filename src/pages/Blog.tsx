@@ -4,7 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Lock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 import { getAllArticles, getArticleCategories } from "@/lib/articles";
 
 const severityColors: Record<string, string> = {
@@ -80,7 +80,6 @@ export default function Blog() {
                   {article.isPro && <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">PRO</Badge>}
                 </div>
                 <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2">
-                  {article.isPro && <Lock className="inline h-4 w-4 mr-1.5 text-primary/60" />}
                   {article.title}
                 </h2>
                 <p className="text-sm text-muted-foreground mb-3">{article.excerpt}</p>
