@@ -76,7 +76,7 @@ export default function Assessment() {
               <a href={contactHref}>
                 <Button variant="hero" size="lg">Email to discuss</Button>
               </a>
-              <Link to="/pro">
+              <Link to="/pricing">
                 <Button variant="outline" size="lg">Start with the report preview</Button>
               </Link>
             </div>

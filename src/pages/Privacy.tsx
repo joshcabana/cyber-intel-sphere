@@ -62,6 +62,9 @@ export default function Privacy() {
               <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Third-party services</h2>
               <ul className="list-disc ml-6 space-y-2">
                 <li><strong className="text-foreground">Beehiiv</strong> — newsletter delivery and subscriber management</li>
+                <li><strong className="text-foreground">Stripe</strong> — payment processing for Pro subscriptions and advisory services</li>
+                <li><strong className="text-foreground">Vercel</strong> — website hosting and content delivery</li>
+                <li><strong className="text-foreground">Lovable Cloud</strong> — application backend, authentication, and data storage</li>
                 <li><strong className="text-foreground">GitHub</strong> — source code hosting</li>
               </ul>
             </section>

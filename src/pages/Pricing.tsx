@@ -90,7 +90,7 @@ export default function Pricing() {
   const handleCheckout = async (tierName: string, priceId: { monthly: string; annual: string } | null) => {
     if (!priceId) {
       if (tierName === "Free") navigate("/login");
-      else toast.info("Contact us at sales@aithreatbrief.com for enterprise pricing");
+      else { window.location.href = "mailto:sales@aithreatbrief.com?subject=Enterprise%20Inquiry"; return; }
       return;
     }
     if (!user) {

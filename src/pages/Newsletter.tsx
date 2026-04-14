@@ -19,6 +19,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { importedArticles } from "@/lib/imported-articles";
+import { getAllArticles } from "@/lib/articles";
 
 const benefits = [
   {
@@ -112,8 +113,9 @@ function SubscribeForm({ source }: { source: string }) {
 }
 
 export default function Newsletter() {
-  const recentArticles = importedArticles.slice(0, 6);
-  const articleCount = importedArticles.length;
+  const allArticles = getAllArticles();
+  const recentArticles = allArticles.slice(0, 6);
+  const articleCount = allArticles.length;
 
   return (
     <div className="min-h-screen flex flex-col">

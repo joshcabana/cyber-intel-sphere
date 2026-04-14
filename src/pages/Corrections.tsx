@@ -49,6 +49,7 @@ export default function Corrections() {
               <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">Corrections log</h2>
               <div className="glass-panel rounded-xl p-6 cyber-border text-center">
                 <p className="text-muted-foreground italic">No corrections issued yet.</p>
+                <p className="text-xs text-muted-foreground/50 mt-3 font-mono">Log last reviewed: April 2026</p>
               </div>
             </section>
 

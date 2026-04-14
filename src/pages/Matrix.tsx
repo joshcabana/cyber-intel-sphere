@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Search, Download, ExternalLink, ArrowUpDown, Shield } from "lucide-react";
 import UpgradeWall from "@/components/UpgradeWall";
 import { getAffiliate } from "@/lib/affiliate-links";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 export type Tool = {
   name: string;
@@ -116,6 +119,23 @@ export default function Matrix() {
               <span className="text-[10px] font-mono text-muted-foreground/40">Last updated: April 12, 2026</span>
             </div>
           </div>
+
+          {/* How we rate */}
+          <Collapsible className="mb-6">
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-primary hover:underline cursor-pointer">
+              <Shield className="h-4 w-4" />
+              How we rate tools
+              <ChevronDown className="h-3 w-3" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 glass-panel rounded-lg p-5 cyber-border text-sm text-muted-foreground space-y-2">
+              <p><strong className="text-foreground">Deployment Friction</strong> — Does it require an invasive kernel agent, or does it use modern eBPF/sidecar patterns?</p>
+              <p><strong className="text-foreground">False Positives</strong> — In prompt-injection filtering, what is the impact on legitimate LLM operations?</p>
+              <p><strong className="text-foreground">Architecture</strong> — Can the solution run air-gapped on-premise, or does it enforce SaaS-only with PII transmitted to vendor APIs?</p>
+              <p className="pt-1">
+                <Link to="/methodology" className="text-primary hover:underline text-xs font-mono">Full methodology →</Link>
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Controls */}
           <div className="flex flex-col md:flex-row gap-3 mb-6">

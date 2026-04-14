@@ -37,6 +37,9 @@ export default function Blog() {
             <p className="text-muted-foreground mt-2">
               Independent analysis of AI security threats, vulnerabilities, and defense strategies.
             </p>
+            <p className="text-xs text-muted-foreground/60 mt-1 font-mono">
+              Incident briefings · Tactical guides · Tool comparisons
+            </p>
           </div>
 
           {/* Category filter */}

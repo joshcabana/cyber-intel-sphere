@@ -47,6 +47,21 @@ export default function About() {
           </div>
 
           <div className="mt-12">
+            <h2 className="text-2xl font-bold text-foreground mb-6">Who's Behind It</h2>
+            <div className="glass-panel rounded-xl p-8 cyber-border space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                <strong className="text-foreground">Josh Cabana</strong> — Founder & Editor
+              </p>
+              <p>
+                Josh is a cybersecurity practitioner and researcher focused on the intersection of AI systems and adversarial risk. He built AI Threat Brief to give security teams the signal they were not getting from vendor marketing or hype-cycle coverage.
+              </p>
+              <p>
+                Every briefing, tool rating, and matrix entry is either written or reviewed by Josh before publication.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12">
             <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
               Editorial Philosophy
