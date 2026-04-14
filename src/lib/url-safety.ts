@@ -3,7 +3,13 @@
  * Runs client-side in browser (no Node.js dependencies).
  */
 
-const CONTROL_CHAR_PATTERN = /[\u0000-\u001F\u007F]/;
+function hasControlChars(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if ((code >= 0x00 && code <= 0x1f) || code === 0x7f) return true;
+  }
+  return false;
+}
 
 function normalizeRawValue(rawValue: unknown): string | null {
   if (typeof rawValue !== "string") return null;
@@ -14,7 +20,7 @@ function normalizeRawValue(rawValue: unknown): string | null {
     trimmedValue.length === 0 ||
     trimmedValue.includes("{") ||
     trimmedValue.includes("}") ||
-    CONTROL_CHAR_PATTERN.test(trimmedValue)
+    hasControlChars(trimmedValue)
   ) {
     return null;
   }

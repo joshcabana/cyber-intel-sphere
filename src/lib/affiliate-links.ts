@@ -63,7 +63,7 @@ export function getAffiliate(code: string): AffiliateEntry | null {
   // Check env override first (only available at build time via Vite)
   const envKey = `VITE_AFFILIATE_${key.replace(/-/g, "_").toUpperCase()}`;
   try {
-    const envUrl = (import.meta as any).env?.[envKey];
+    const envUrl = import.meta.env[envKey];
     if (envUrl) {
       const def = defaults[key];
       return { name: def?.name ?? code, url: envUrl, coupon: def?.coupon };
